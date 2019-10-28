@@ -10,15 +10,16 @@ class AnswerController {
             if (!req.body.hasOwnProperty('desc')) throw new Error('Answer desc property not found!');
             if (!req.body.hasOwnProperty('questionId')) throw new Error('questionId property not found!');
             const dbObj = {
-                desc: desc,
+                desc: req.body.desc,
                 questionId: req.body.questionId
             };
             if (req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
             const newAnswer = new Answer(dbObj);
             const dbResp = await newAnswer.save();
-            const questionObj = await Question.findById({ _id: questionId });
+            const questionObj = await Question.findById({ _id: req.body.questionId });
             if (!questionObj) throw new Error('Question not found');
-            console.log(questionObj);
+            questionObj.answers.push(dbResp._id);
+            await questionObj.save();
             if (!!req.files) {
                 const fileNameExt = req.files.file.name.split('.')[1];
                 const storageName = dbResp._id.toString().concat('.').concat(fileNameExt);

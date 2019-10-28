@@ -13,6 +13,7 @@
     "http-errors": "~1.6.3",
     "http-status": "^1.4.0",
     "jade": "~1.11.0",
+    "mongodb": "^3.3.3",
     "mongoose": "^5.7.7",
     "morgan": "~1.9.1",
     "uuid": "^3.3.3"

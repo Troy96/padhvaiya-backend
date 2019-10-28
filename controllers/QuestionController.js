@@ -9,14 +9,14 @@ class QuestionController {
             if (!req.body.hasOwnProperty('desc')) throw new Error('Question desc property not found!');
             const desc = req.body.desc;
             if (!desc) throw new Error('Question desc not found!');
-            const dbObj = {desc: desc};
-            if(req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
+            const dbObj = { desc: desc };
+            if (req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
             const newQuestion = new Question(dbObj);
             const dbResp = await newQuestion.save();
             if (!!req.files) {
                 const fileNameExt = req.files.file.name.split('.')[1];
                 const storageName = dbResp._id.toString().concat('.').concat(fileNameExt);
-                req.files.file.mv(`public/images/${storageName}`)
+                req.files.file.mv(`public/images/questions/${storageName}`)
 
             }
             return res.sendStatus(httpCodes.OK)
@@ -30,7 +30,9 @@ class QuestionController {
 
     async getAll(req, res) {
         try {
-            const questionList = await Question.find();
+            const questionList = await Question.find()
+                .populate('answers')
+                .exec();
             return res.status(httpCodes.OK).send(questionList)
         } catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
@@ -43,7 +45,9 @@ class QuestionController {
         try {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
             const questionId = req.params.id;
-            const questionObj = await Question.findOne({ _id: questionId });
+            const questionObj = await Question.findOne({ _id: questionId })
+                .populate('answers')
+                .exec();
             if (!questionObj) throw new Error('Question not found!');
             return res.status(httpCodes.OK).send(questionObj);
         }
