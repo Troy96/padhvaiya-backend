@@ -1,6 +1,8 @@
 const { Answer } = require('./../models/answer');
 const { Question } = require('./../models/question');
+const { User } = require('./../models/user');
 const httpCodes = require('http-status');
+
 
 class AnswerController {
     constructor() { }
@@ -9,13 +11,19 @@ class AnswerController {
         try {
             if (!req.body.hasOwnProperty('desc')) throw new Error('Answer desc property not found!');
             if (!req.body.hasOwnProperty('questionId')) throw new Error('questionId property not found!');
-            const dbObj = {
+            let dbObj = {
                 desc: req.body.desc,
                 questionId: req.body.questionId
             };
             if (req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
             const newAnswer = new Answer(dbObj);
             const dbResp = await newAnswer.save();
+            if (req.body.hasOwnProperty('userId')) {
+                const userObj = await User.findById({ _id: req.body.userId });
+                if (!userObj) throw new Error('User not found');
+                userObj.answers.push(dbResp._id);
+                await userObj.save();
+            }
             const questionObj = await Question.findById({ _id: req.body.questionId });
             if (!questionObj) throw new Error('Question not found');
             questionObj.answers.push(dbResp._id);
@@ -24,7 +32,6 @@ class AnswerController {
                 const fileNameExt = req.files.file.name.split('.')[1];
                 const storageName = dbResp._id.toString().concat('.').concat(fileNameExt);
                 req.files.file.mv(`public/images/answers/${storageName}`)
-
             }
             return res.sendStatus(httpCodes.OK)
         }

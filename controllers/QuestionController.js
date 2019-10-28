@@ -1,4 +1,6 @@
 const { Question } = require('./../models/question');
+const { User } = require('./../models/user');
+const { Answer } = require('./../models/answer');
 const httpCodes = require('http-status');
 
 class QuestionController {
@@ -6,13 +8,19 @@ class QuestionController {
 
     async create(req, res) {
         try {
-            if (!req.body.hasOwnProperty('desc')) throw new Error('Question desc property not found!');
+            if (!req.body.hasOwnProperty('desc')) throw new Error('desc property not found!');
             const desc = req.body.desc;
             if (!desc) throw new Error('Question desc not found!');
-            const dbObj = { desc: desc };
+            let dbObj = { desc: desc };
             if (req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
             const newQuestion = new Question(dbObj);
             const dbResp = await newQuestion.save();
+            if (req.body.hasOwnProperty('userId')) {
+                const userObj = await User.findById({ _id: req.body.userId });
+                if (!userObj) throw new Error('User not found');
+                userObj.questions.push(dbResp._id);
+                await userObj.save();
+            }
             if (!!req.files) {
                 const fileNameExt = req.files.file.name.split('.')[1];
                 const storageName = dbResp._id.toString().concat('.').concat(fileNameExt);
@@ -63,6 +71,8 @@ class QuestionController {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
             const questionId = req.params.id;
             await Question.findByIdAndDelete({ _id: questionId });
+            const countOfAnswers = await Answer.countDocuments();
+            if (countOfAnswers > 0) await Answer.remove({ questionId: questionId })
             return res.sendStatus(httpCodes.OK)
         }
         catch (e) {
