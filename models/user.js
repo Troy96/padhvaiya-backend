@@ -1,13 +1,16 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const validator = require('validator');
 
 const UserSchema = new mongoose.Schema({
     first_name: { type: String, required: true, trim: true },
     last_name: { type: String, required: true, trim: true },
-    email: { type: String, required: true, trim: true },
-    password: { type: String, required: true, trim: true },
+    email: { type: String, required: true, unique: true, trim: true, validate: { validator: validator.isEmail, message: `Not a valid email` } },
+    password: { type: String, required: true, minlength: 6, trim: true },
     questions: [{ type: mongoose.Types.ObjectId, ref: 'Question', default: [] }],
     answers: [{ type: mongoose.Types.ObjectId, ref: 'Answer', default: [] }],
+    token: { type: String },
     createdAt: { type: Date, default: Date.now() },
     updatedAt: { type: Date }
 })
@@ -24,6 +27,44 @@ UserSchema.pre('save', function (next) {
     }
     else return next();
 });
+
+
+UserSchema.statics.verifyCredentials = function (email, password) {
+    let User = this;
+    return User.findOne({ email: email })
+        .then(user => {
+            if (!user) return Promise.reject('User not found!');
+            return new Promise((resolve, reject) => {
+                bcrypt.compare(password, user.password, (err, res) => {
+                    if (res) resolve(user);
+                    else reject('Wrong passwords!');
+                })
+            })
+        })
+}
+
+
+UserSchema.methods.generateAuthToken = async function () {
+    let user = this;
+    let email = user.email;
+    let token = jwt.sign({ _id: user._id.toHexString(), email }, process.env.JWT_SECRET).toString();
+    user.token = token;
+    await user.save();
+    return token;
+}
+
+UserSchema.statics.findByToken = function (token) {
+    let User = this;
+    let decoded;
+    try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (e) {
+        return Promise.reject('Error in validating token!');
+    }
+    return User.findOne({
+        token: token
+    })
+}
 
 const User = mongoose.model('User', UserSchema, 'User');
 
