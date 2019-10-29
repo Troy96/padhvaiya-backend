@@ -72,6 +72,22 @@ class QuestionController {
         }
     }
 
+    async getByUser(req, res) {
+        try {
+            if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
+            const userId = req.params.id;
+            const questionList = await Question.find({ userId: userId })
+                .populate('userId', 'first_name last_name')
+                .exec();
+            return res.status(httpCodes.OK).send(questionList);
+        }
+        catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            });
+        }
+    }
+
     async deleteById(req, res) {
         try {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');

@@ -91,6 +91,21 @@ class AnswerController {
         }
     }
 
+    async getByUser(req, res){
+        try {
+            if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
+            const userId = req.params.id;
+            const answerList = await Answer.find({ userId: userId })
+                .populate('userId', 'first_name last_name');
+            return res.status(httpCodes.OK).send(answerList);
+        }
+        catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            });
+        }
+    }
+
     async deleteById(req, res) {
         try {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
