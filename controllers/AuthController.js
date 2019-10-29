@@ -14,9 +14,7 @@ class AuthController {
             const password = req.body.password;
             const userObj = await User.verifyCredentials(email, password);
             const token = await userObj.generateAuthToken();
-            return res.status(httpCodes.OK).send({
-                token: token
-            })
+            return res.status(httpCodes.OK).send(userObj)
         }
         catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({

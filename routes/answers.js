@@ -8,5 +8,6 @@ router.get('/', answerController.getAll);
 router.get('/:id', answerController.getById);
 router.delete('/:id', answerController.deleteById);
 router.delete('/', answerController.deleteAll);
+router.get('/question/:id', answerController.getByQuestion);
 
 module.exports = router;

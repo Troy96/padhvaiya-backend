@@ -8,13 +8,13 @@ class UserController {
 
     async create(req, res) {
         try {
-            if (!req.body.hasOwnProperty('first_name')) throw new Error('first_name property not found!');
-            if (!req.body.hasOwnProperty('last_name')) throw new Error('last_name property not found!');
+            if (!req.body.hasOwnProperty('firstName')) throw new Error('firstName property not found!');
+            if (!req.body.hasOwnProperty('lastName')) throw new Error('lastName property not found!');
             if (!req.body.hasOwnProperty('email')) throw new Error('email property not found!');
             if (!req.body.hasOwnProperty('password')) throw new Error('password property not found!');
             let dbObj = {
-                first_name: req.body.first_name,
-                last_name: req.body.last_name,
+                first_name: req.body.firstName,
+                last_name: req.body.lastName,
                 email: req.body.email,
                 password: req.body.password
             };
