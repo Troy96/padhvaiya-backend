@@ -20,7 +20,9 @@ class UserController {
             };
             const newUser = new User(dbObj);
             await newUser.save();
-            return res.sendStatus(httpCodes.OK);
+            return res.status(httpCodes.OK).send({
+                success: true
+            });
         }
         catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({

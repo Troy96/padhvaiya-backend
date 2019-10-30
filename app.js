@@ -13,6 +13,7 @@ var usersRouter = require('./routes/users');
 var questionsRouter = require('./routes/questions');
 const answerRouter = require('./routes/answers');
 const authRouter = require('./routes/auth');
+const fileRouter = require('./routes/files');
 
 var app = express();
 
@@ -26,16 +27,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors({
-  origin:'*',
+  origin: '*',
   preflightContinue: true,
-  methods:'GET, HEAD, PUT, POST, DELETE'
+  methods: 'GET, HEAD, PUT, POST, DELETE'
 }));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/questions', questionsRouter);
-app.use('/answers', answerRouter)
-app.use('/auth', authRouter)
+app.use('/answers', answerRouter);
+app.use('/auth', authRouter);
+app.use('/files', fileRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
