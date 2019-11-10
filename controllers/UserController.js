@@ -12,11 +12,14 @@ class UserController {
             if (!req.body.hasOwnProperty('lastName')) throw new Error('lastName property not found!');
             if (!req.body.hasOwnProperty('email')) throw new Error('email property not found!');
             if (!req.body.hasOwnProperty('password')) throw new Error('password property not found!');
+            if (!req.body.hasOwnProperty('college')) throw new Error('college property not found!');
+
             let dbObj = {
                 first_name: req.body.firstName,
                 last_name: req.body.lastName,
                 email: req.body.email,
-                password: req.body.password
+                password: req.body.password,
+                college: req.body.college
             };
             const newUser = new User(dbObj);
             await newUser.save();
