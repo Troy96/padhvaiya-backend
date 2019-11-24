@@ -15,9 +15,9 @@ class CloudController {
             .promise();
     }
 
-    async uploadObject({ Bucket = bucketName, Key = keyName, Body = objectBody }) {
+    async uploadObject({ Bucket = bucketName, Key = keyName, Body = objectBody, ACL = 'public-read' }) {
         return new AWS.S3({ apiVersion: '2006-03-01' })
-            .putObject({ Bucket, Key, Body })
+            .putObject({ Bucket, Key, Body, ACL })
             .promise();
     }
 }

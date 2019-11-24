@@ -2,7 +2,9 @@ const { Answer } = require('./../models/answer');
 const { Question } = require('./../models/question');
 const { User } = require('./../models/user');
 const httpCodes = require('http-status');
-
+const { CloudController } = require('./CloudController');
+const { CONSTANTS } = require('./../constants');
+const cloudController = new CloudController();
 
 class AnswerController {
     constructor() { }
@@ -22,9 +24,12 @@ class AnswerController {
             if (!!req.files) {
                 const fileNameExt = req.files.file.name.split('.')[1];
                 const storageName = dbResp._id.toString().concat('.').concat(fileNameExt);
-                req.files.file.mv(`public/images/answers/${storageName}`);
+                const cloudStoreKey = 'answers/' + storageName;
+                const bufferData = req.files.file.data;
+                const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
+                await cloudController.uploadObject({Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData});
                 const dbObj = await Answer.findById({ _id: dbResp._id });
-                dbObj['imgRef'] = `/images/answers/${storageName}`;
+                dbObj['imgRef'] = dbStorageRef;
                 await dbObj.save();
             }
             if (req.body.hasOwnProperty('userId')) {
@@ -91,7 +96,7 @@ class AnswerController {
         }
     }
 
-    async getByUser(req, res){
+    async getByUser(req, res) {
         try {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
             const userId = req.params.id;
