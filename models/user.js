@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema({
     questions: [{ type: mongoose.Types.ObjectId, ref: 'Question', default: [] }],
     answers: [{ type: mongoose.Types.ObjectId, ref: 'Answer', default: [] }],
     token: { type: String },
+    college: {type: mongoose.Types.ObjectId, ref:'College'},
     profileImg: { type: String, default: 'http://via.placeholder.com/170x170' },
     coverImg: { type: String, default: 'http://via.placeholder.com/1600x400' },
     createdAt: { type: Date, default: Date.now() },

@@ -1,5 +1,9 @@
 const { User } = require('./../models/user');
 const httpCodes = require('http-status');
+const { CloudController } = require('../controllers/CloudController');
+const { CONSTANTS } = require('./../constants');
+
+const cloudController = new CloudController();
 
 class FileController {
     constructor() { }
@@ -11,18 +15,22 @@ class FileController {
             if (!req.files) throw new Error('File not found!');
             const fileNameExt = req.files.file.name.split('.')[1];
             const storageName = req.body.imageType.concat(`_${req.body.userId}`).concat('.').concat(fileNameExt);
-            req.files.file.mv(`public/images/profile/${storageName}`)
+            let cloudStoreKey = '';
+            const bufferData = req.files.file.data;
             const userObj = await User.findById({ _id: req.body.userId });
             switch (req.body.imageType) {
                 case 'cover': {
-                    userObj['coverImg'] = `images/profile/${storageName}`;
+                    cloudStoreKey = 'profiles/' + storageName;
+                    userObj['coverImg'] = CONSTANTS.BASE_S3_REF + cloudStoreKey;
                     break;
                 }
                 case 'profile': {
-                    userObj['profileImg'] = `images/profile/${storageName}`;
+                    cloudStoreKey = 'profiles/' + storageName;
+                    userObj['profileImg'] = CONSTANTS.BASE_S3_REF + cloudStoreKey;
                     break;
                 }
             }
+            await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
             await userObj.save();
             return res.status(httpCodes.OK).send({
                 success: true

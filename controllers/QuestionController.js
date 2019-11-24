@@ -2,7 +2,10 @@ const { Question } = require('./../models/question');
 const { User } = require('./../models/user');
 const { Answer } = require('./../models/answer');
 const httpCodes = require('http-status');
-const os = require('os');
+const { CloudController } = require('./CloudController');
+const { CONSTANTS } = require('./../constants');
+
+const cloudController = new CloudController();
 
 class QuestionController {
     constructor() { }
@@ -19,9 +22,12 @@ class QuestionController {
             if (!!req.files) {
                 const fileNameExt = req.files.file.name.split('.')[1];
                 const storageName = dbResp._id.toString().concat('.').concat(fileNameExt);
-                req.files.file.mv(`public/images/questions/${storageName}`)
+                const cloudStoreKey = 'questions/' + storageName;
+                const bufferData = req.files.file.data;
+                await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
+                const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
                 const questObj = await Question.findById({ _id: dbResp._id });
-                questObj['imgRef'] = `images/questions/${storageName}`;
+                questObj['imgRef'] = dbStorageRef;
                 await questObj.save();
             }
             if (req.body.hasOwnProperty('userId')) {
