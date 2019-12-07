@@ -126,6 +126,23 @@ class PostController {
             });
         }
     }
+
+    async actOnPost(req, res) {
+        try {
+            if (!req.body.hasOwnProperty('action')) throw new Error('Action not found!');
+            const action = req.body.action;
+            const count = action === 'Like' ? 1 : -1;
+            await Post.updateOne({ _id: req.params.id }, { $inc: { likes: count } }, { new: true });
+            return res.status(httpCodes.OK).send({
+                success: true
+            });
+        }
+        catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            });
+        }
+    }
 }
 
 module.exports = { PostController }
