@@ -50,7 +50,7 @@ class QuestionController {
     async getAll(req, res) {
         try {
             const questionList = await Question.find()
-                .populate('userId', 'first_name last_name')
+                .populate('userId', 'first_name last_name profileImg')
                 .populate('answers')
                 .exec();
             return res.status(httpCodes.OK).send(questionList)

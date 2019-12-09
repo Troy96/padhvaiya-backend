@@ -19,6 +19,7 @@ const commentRouter = require('./routes/comments');
 const collegeRouter = require('./routes/college');
 const groupRouter = require('./routes/group');
 const fileRouter = require('./routes/files');
+const passwordResetRouter = require('./routes/resetPassword');
 
 var app = express();
 
@@ -45,6 +46,7 @@ app.use('/posts', postRouter);
 app.use('/comments', commentRouter);
 app.use('/colleges', collegeRouter);
 app.use('/groups', groupRouter);
+app.use('/resetPassword', passwordResetRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
