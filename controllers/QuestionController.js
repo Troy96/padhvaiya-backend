@@ -125,6 +125,28 @@ class QuestionController {
             });
         }
     }
+
+    async questionAction(req, res) {
+        try {
+            const ACTION_TYPE = ['Like', 'Unlike'];
+            if (!req.params.hasOwnProperty('id')) throw new Error('Id not found');
+            if (!req.body.hasOwnProperty('action')) throw new Error('Action not found');
+            const { action } = req.body;
+            const questionId = req.params.id;
+            if (!ACTION_TYPE.includes(action)) throw new Error('Wrong action type');
+            const count = action === 'Like' ? 1 : -1;
+            await Question.updateOne({ _id: questionId }, { $inc: { likes: count } }, { new: true });
+            return res.status(httpCodes.OK).send({
+                success: true
+            })
+
+        }
+        catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            })
+        }
+    }
 }
 
 module.exports = { QuestionController }
