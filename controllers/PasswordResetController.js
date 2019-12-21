@@ -73,7 +73,6 @@ class PasswordResetController {
             const decodedPayload = jwt.decode(req.body.token, secretKey);
             if (decodedPayload.email != userObj.email) throw new Error('Bad token!');
             if (decodedPayload.id != userObj._id) throw new Error('Bad token');
-            //await User.updateOne({ _id: userId }, { password: req.body.password });
             userObj['password']= req.body.password;
             await userObj.save();
             return res.status(httpCodes.OK).send('Your password was changed successfully!')
