@@ -1,5 +1,4 @@
-var express = require('express');
-var router = express.Router();
+const router = require('express').Router();
 const { AnswerController } = require('./../controllers/AnswerController');
 const answerController = new AnswerController();
 
@@ -10,5 +9,6 @@ router.delete('/:id', answerController.deleteById);
 router.delete('/', answerController.deleteAll);
 router.get('/question/:id', answerController.getByQuestion);
 router.get('/user/:id', answerController.getByUser);
+router.post('/:id/react', answerController.reactionOnAnswer);
 
 module.exports = router;

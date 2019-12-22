@@ -27,7 +27,7 @@ class AnswerController {
                 const cloudStoreKey = 'answers/' + storageName;
                 const bufferData = req.files.file.data;
                 const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
-                await cloudController.uploadObject({Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData});
+                await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
                 const dbObj = await Answer.findById({ _id: dbResp._id });
                 dbObj['imgRef'] = dbStorageRef;
                 await dbObj.save();
@@ -138,6 +138,26 @@ class AnswerController {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
                 error: e.message
             });
+        }
+    }
+
+    async reactionOnAnswer(req, res) {
+        try {
+            const actionType = ['Like', 'Unlike'];
+            if (!req.body.hasOwnProperty('action')) throw new Error('Action not found');
+            if (!req.params.hasOwnProperty('id')) throw new Error('Id not found');
+            const { action } = req.body;
+            const answerId = req.params.id;
+            if (!actionType.includes(action)) throw new Error('Wrong action type');
+            const count = action === 'Like' ? 1 : -1;
+            await Answer.updateOne({ _id: answerId }, { $inc: { likes: count } }, { new: true });
+            return res.status(httpCodes.OK).send({
+                success: true
+            })
+        } catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            })
         }
     }
 }

@@ -11,6 +11,6 @@ router.get('/:id', questionController.getById);
 router.delete('/:id', questionController.deleteById);
 router.delete('/', questionController.deleteAll);
 router.get('/user/:id', questionController.getByUser);
-router.post('/:id/react', questionController.questionAction);
+router.post('/:id/react', questionController.reactionOnQuestion);
 
 module.exports = router;

@@ -126,7 +126,7 @@ class QuestionController {
         }
     }
 
-    async questionAction(req, res) {
+    async reactionOnQuestion(req, res) {
         try {
             const ACTION_TYPE = ['Like', 'Unlike'];
             if (!req.params.hasOwnProperty('id')) throw new Error('Id not found');
