@@ -5,7 +5,7 @@ const NoteSchema = new mongoose.Schema({
     userId: { type: mongoose.Types.ObjectId, ref: 'User' },
     fileRef: { type: String, default: null },
     createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date }
+    updatedAt: { type: Date, default: Date.now }
 })
 
 const Note = mongoose.model('Note', NoteSchema, 'Note');

@@ -9,7 +9,7 @@ const GroupSchema = new mongoose.Schema({
     members: [{ type: mongoose.Types.ObjectId, ref: 'User', default: [] }],
     college: { type: mongoose.Types.ObjectId, ref: 'College', unique: true },
     createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date }
+    updatedAt: { type: Date, default: Date.now }
 })
 
 const Group = mongoose.model('Group', GroupSchema, 'Group');

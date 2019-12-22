@@ -8,7 +8,7 @@ const PostSchema = new mongoose.Schema({
     group: { type: mongoose.Types.ObjectId, ref: 'Group' },
     imgRef: { type: String, default: null },
     createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date }
+    updatedAt: { type: Date, default: Date.now }
 })
 
 const Post = mongoose.model('Post', PostSchema, 'Post');
