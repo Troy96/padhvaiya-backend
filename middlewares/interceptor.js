@@ -3,7 +3,6 @@ const httpCodes = require('http-status');
 
 const authenticate = async (req, res, next) => {
     try {
-        console.log('1')
         const token = req.header('Authorization');
         if (!token) throw new Error('Token not found');
         const userByToken = await User.findByToken(token);

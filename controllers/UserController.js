@@ -28,8 +28,15 @@ class UserController {
             });
         }
         catch (e) {
+            let message = 'Something went wrong. Try again!';
+            switch (e.code) {
+                case 11000: {
+                    message = 'Email address already registered';
+                    break;
+                }
+            }
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
-                error: e.message
+                error: message
             });
         }
     }

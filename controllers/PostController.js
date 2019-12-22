@@ -17,6 +17,7 @@ class PostController {
                 user: req.body.user,
                 group: req.body.group
             };
+
             const newPost = new Post(dbObj);
             await newPost.save();
 
@@ -141,6 +142,21 @@ class PostController {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
                 error: e.message
             });
+        }
+    }
+
+    async photosByGroup(req, res) {
+        try {
+            if (!req.params.hasOwnProperty('id')) throw new Error('GroupId not found');
+            const groupId = req.params.id;
+            const photosOfAllPostsList = (await Post.find({ group: groupId })
+                .select({ imgRef: 1, _id: 0 }))
+                .map(obj => obj['imgRef']);
+            return res.status(httpCodes.OK).send(photosOfAllPostsList)
+        } catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            })
         }
     }
 }
