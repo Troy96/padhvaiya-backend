@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const { FileController } = require('./../controllers/FileController');
 const fileController = new FileController();
 const { authenticate } = require('./../middlewares/interceptor');

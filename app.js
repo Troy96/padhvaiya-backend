@@ -22,7 +22,7 @@ const fileRouter = require('./routes/files');
 const passwordResetRouter = require('./routes/resetPassword');
 const notesRouter = require('./routes/notes');
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.use(fileUpload());

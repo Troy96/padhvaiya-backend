@@ -13,7 +13,6 @@ class NotesController {
             const { userId, groupId, desc } = req.body;
             const dbObj = { userId, groupId, desc };
             const dbResp = await new Note(dbObj).save();
-            console.log(dbResp);
             /* if (!!req.files) {
                 const fileNameExt = req.files.file.name.split('.')[1];
                 const storageName = dbResp._id.toString().concat('.').concat(fileNameExt);

@@ -1,6 +1,4 @@
-const { Question } = require('./../models/question');
 const { User } = require('./../models/user');
-const { Answer } = require('./../models/answer');
 const httpCodes = require('http-status');
 
 class AuthController {
