@@ -5,7 +5,7 @@ const questionController = new QuestionController();
 const { authenticate } = require('./../middlewares/interceptor');
 
 
-router.post('/', authenticate, questionController.create);
+router.post('/', questionController.create);
 router.get('/', questionController.getAll);
 router.get('/:id', questionController.getById);
 router.delete('/:id', questionController.deleteById);
