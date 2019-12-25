@@ -46,6 +46,7 @@ class UserController {
             const userList = await User.find()
                 .populate('questions')
                 .populate('answers')
+                .populate('college')
                 .exec();
             return res.status(httpCodes.OK).send(userList)
         } catch (e) {
@@ -62,6 +63,7 @@ class UserController {
             const userObj = await User.findOne({ _id: userId })
                 .populate('questions')
                 .populate('answers')
+                .populate('college')
                 .exec();
             if (!userObj) throw new Error('User not found!');
             return res.status(httpCodes.OK).send(userObj);

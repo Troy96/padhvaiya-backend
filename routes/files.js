@@ -5,7 +5,7 @@ const fileController = new FileController();
 const { authenticate } = require('./../middlewares/interceptor');
 
 
-router.post('/changePicture', authenticate, fileController.changePicture);
+router.post('/changePicture', fileController.changePicture);
 
 
 module.exports = router;
