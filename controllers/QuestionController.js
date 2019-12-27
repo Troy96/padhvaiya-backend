@@ -67,6 +67,7 @@ class QuestionController {
             const questionId = req.params.id;
             const questionObj = await Question.findOne({ _id: questionId })
                 .populate('userId', 'first_name last_name')
+                .populate('answers')
                 .exec();
             if (!questionObj) throw new Error('Question not found!');
             return res.status(httpCodes.OK).send(questionObj);
