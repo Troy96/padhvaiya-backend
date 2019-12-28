@@ -1,4 +1,5 @@
 const { Group } = require('./../models/group');
+const { User } = require('./../models/user');
 const httpCodes = require('http-status');
 
 class GroupController {
@@ -107,6 +108,45 @@ class GroupController {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
                 error: e.message
             });
+        }
+    }
+
+    async requestMembership(req, res) {
+        try {
+            if (!req.body.hasOwnProperty('groupId')) throw new Error('groupId property not found');
+            if (!req.body.hasOwnProperty('userId')) throw new Error('userId property not found');
+            const groupId = req.body.groupId;
+            const userId = req.body.userId;
+            const userObj = await User.findById({ _id: userId });
+            const groupObj = await Group.findById({ _id: groupId });
+            if (!groupObj) throw new Error('Group not found!');
+            if (!userObj) throw new Error('User not found!');
+            await groupObj.storeNewMemberRequest(userId);
+            return res.status(httpCodes.OK).send(groupObj)
+        }
+        catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            })
+        }
+    }
+
+    async getPendingMembersByGroup(req, res) {
+        try {
+            if (!req.params.hasOwnProperty('id')) throw new Error('groupId not found');
+            if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
+            const groupId = req.params.id;
+            const userId = req.body.userId;
+            const groupObj = await Group.findById({ _id: groupId })
+                .populate('pendingRequests')
+            if (!groupObj) throw new Error('Group not found!');
+            if (!groupObj.admins.includes(userId)) throw new Error('User is not admin');
+            return res.status(httpCodes.OK).send(groupObj.pendingRequests);
+        }
+        catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            })
         }
     }
 }
