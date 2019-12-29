@@ -45,6 +45,7 @@ class AuthController {
     async socialLogin(req, res) {
         try {
             let userSocialData = '';
+            let userFromDB = '';
             if (!req.body.hasOwnProperty('socialAccount')) throw new Error('socialAccount not found');
             if (!req.body.hasOwnProperty('authToken')) throw new Error('authToken not found');
             const socialAccount = req.body.socialAccount;
@@ -54,7 +55,7 @@ class AuthController {
                     userSocialData = await axios.get(`${GOOGLE_OAUTH_TOKEN_ENDPOINT + authToken}`);
                     if (!userSocialData.data) throw new Error('Empty response from Google server');
                     const { email } = userSocialData.data;
-                    const userFromDB = await User.findOne({ email: email });
+                    userFromDB = await User.findOne({ email: email });
                     if (!userFromDB) throw new Error('User from social login not registered with us!');
                     break;
                 }
@@ -65,10 +66,11 @@ class AuthController {
             const { email, given_name, family_name, name, picture } = userSocialData.data;
             return res.status(httpCodes.OK).send({
                 email,
-                name,
                 given_name,
                 family_name,
-                picture
+                name,
+                picture,
+                userId: userFromDB._id
             });
         }
         catch (e) {
