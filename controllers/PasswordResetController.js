@@ -17,7 +17,7 @@ class PasswordResetController {
             const payload = { id: user.id, email: email }
             const secretKey = user.password.concat('-').concat(user.createdAt.getTime());
             const oneTimeToken = jwt.sign(payload, secretKey);
-            const passwordResetLink = `http://localhost:3000/resetPassword/${user.id}/${oneTimeToken}`;
+            const passwordResetLink = `https://api-padhvaiya.herokuapp.com/resetPassword/${user.id}/${oneTimeToken}`;
             const htmlBody =
                 `<html>
                 <body>
@@ -27,7 +27,7 @@ class PasswordResetController {
                     <h3><a href=${passwordResetLink}>${passwordResetLink}</a></h3>
                 </body>
             </html>`
-            await emailController.sendMail('troy0870@gmail.com', 'troy0870@gmail.com', 'Padhvaiya: Password Reset Link', htmlBody);
+            await emailController.sendMail(email, 'Padhvaiya: Password Reset Link', htmlBody);
             return res.status(httpCodes.OK).send({
                 success: true
             })

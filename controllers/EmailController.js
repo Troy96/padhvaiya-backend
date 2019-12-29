@@ -13,7 +13,7 @@ class EmailController {
         });
     }
 
-    async sendMail(from, to, subject, messageBody) {
+    async sendMail(to, subject, messageBody) {
         const mailOptions = {
             from: CONSTANTS.EMAIL_CONFIG.USER_EMAIL,
             to: to,
