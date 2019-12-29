@@ -5,5 +5,6 @@ const authController = new AuthController();
 
 router.post('/login', authController.login);
 router.get('/logout', authController.logout);
+router.post('/socialLogin', authController.socialLogin);
 
 module.exports = router;

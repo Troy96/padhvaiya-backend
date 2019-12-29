@@ -1,5 +1,8 @@
 const { User } = require('./../models/user');
 const httpCodes = require('http-status');
+const axios = require('axios');
+
+const GOOGLE_OAUTH_TOKEN_ENDPOINT = 'https://www.googleapis.com/oauth2/v3/tokeninfo/?id_token=';
 
 class AuthController {
     constructor() { }
@@ -37,6 +40,42 @@ class AuthController {
             });
         }
 
+    }
+
+    async socialLogin(req, res) {
+        try {
+            let userSocialData = '';
+            if (!req.body.hasOwnProperty('socialAccount')) throw new Error('socialAccount not found');
+            if (!req.body.hasOwnProperty('authToken')) throw new Error('authToken not found');
+            const socialAccount = req.body.socialAccount;
+            const authToken = req.body.authToken;
+            switch (socialAccount) {
+                case 'google': {
+                    userSocialData = await axios.get(`${GOOGLE_OAUTH_TOKEN_ENDPOINT + authToken}`);
+                    if (!userSocialData.data) throw new Error('Empty response from Google server');
+                    const { email } = userSocialData.data;
+                    const userFromDB = await User.findOne({ email: email });
+                    if (!userFromDB) throw new Error('User from social login not registered with us!');
+                    break;
+                }
+                default: {
+                    throw new Error('> SOCIAL ACCOUNT NOT HANDLED');
+                }
+            }
+            const { email, given_name, family_name, name, picture } = userSocialData.data;
+            return res.status(httpCodes.OK).send({
+                email,
+                name,
+                given_name,
+                family_name,
+                picture
+            });
+        }
+        catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            })
+        }
     }
 }
 

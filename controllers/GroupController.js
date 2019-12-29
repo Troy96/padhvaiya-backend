@@ -113,9 +113,9 @@ class GroupController {
 
     async requestMembership(req, res) {
         try {
-            if (!req.body.hasOwnProperty('groupId')) throw new Error('groupId property not found');
+            if (!req.params.hasOwnProperty('id')) throw new Error('groupId property not found');
             if (!req.body.hasOwnProperty('userId')) throw new Error('userId property not found');
-            const groupId = req.body.groupId;
+            const groupId = req.params.groupId;
             const userId = req.body.userId;
             const userObj = await User.findById({ _id: userId });
             const groupObj = await Group.findById({ _id: groupId });
@@ -147,6 +147,43 @@ class GroupController {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
                 error: e.message
             })
+        }
+    }
+
+    async takeMembershipAction(req, res) {
+        try {
+            if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found!');
+            if (!req.params.hasOwnProperty('id')) throw new Error('groupId not found!');
+            if (!req.body.hasOwnProperty('actionType')) throw new Error('actionType not found!');
+            const userId = req.body.userId;
+            const groupId = req.params.id;
+            const actionType = req.body.actionType;
+            const groupObj = await Group.findById({ _id: groupId });
+            if (!groupObj) throw new Error('Group not found!');
+            const userObj = await User.findById({ _id: userId });
+            if (!userObj) throw new Error('User not found!');
+            switch (actionType) {
+                case 'allowMembership': {
+                    groupObj.addNewMember(userId);
+                    break;
+                }
+                case 'allowFollowing': {
+                    groupObj.addNewFollower(userId);
+                    break;
+                }
+                default: {
+                    throw new Error('Wrong actionType');
+                }
+            }
+            //groupObj.pendingRequests.splice(groupObj.pendingRequests.indexOf(userId));
+            return res.status(httpCodes.OK).send(groupObj)
+
+        }
+        catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR)
+                .send({
+                    error: e.message
+                })
         }
     }
 }
