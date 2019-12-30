@@ -9,8 +9,8 @@ class EmailController {
     async sendViaMail(to, subject, messageBody) {
         nodeoutlook.sendEmail({
             auth: {
-                user: 'padhvaiya@outlook.com',
-                pass: 'edu@baba'
+                user: CONSTANTS.EMAIL_CONFIG.USER_EMAIL,
+                pass: CONSTANTS.EMAIL_CONFIG.USER_PASSWORD
             },
             from: CONSTANTS.EMAIL_CONFIG.USER_EMAIL,
             to: to,
