@@ -12,6 +12,7 @@ class EmailController {
                 user: CONSTANTS.EMAIL_CONFIG.USER_EMAIL,
                 pass: CONSTANTS.EMAIL_CONFIG.USER_PASSWORD
             },
+            secure: false,
             from: CONSTANTS.EMAIL_CONFIG.USER_EMAIL,
             to: to,
             subject: subject,
