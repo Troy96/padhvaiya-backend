@@ -1,6 +1,10 @@
 const { Group } = require('./../models/group');
 const { User } = require('./../models/user');
 const httpCodes = require('http-status');
+const { CloudController } = require('./CloudController');
+const { CONSTANTS } = require('../constants');
+
+const cloudController = new CloudController();
 
 class GroupController {
     constructor() { }
@@ -22,7 +26,18 @@ class GroupController {
                 members: [req.body.groupCreator]
             };
             const newGroup = new Group(dbObj);
-            await newGroup.save();
+            const dbResp = await newGroup.save();
+            if (!!req.files) {
+                const fileNameExt = req.files.file.name.split('.')[1];
+                const storageName = dbResp._id.toString().concat('.').concat(fileNameExt);
+                const cloudStoreKey = 'groups/logo/' + storageName;
+                const bufferData = req.files.file.data;
+                await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
+                const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
+                const groupObj = await Group.findById({ _id: dbResp._id });
+                groupObj['logoRef'] = dbStorageRef;
+                await groupObj.save();
+            }
 
             return res.status(httpCodes.OK).send({
                 success: true
