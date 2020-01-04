@@ -16,14 +16,12 @@ class GroupController {
             if (!req.body.hasOwnProperty('groupCreator')) throw new Error('groupCreator property not found!');
             if (!req.body.hasOwnProperty('college')) throw new Error('college property not found!');
 
-            let dbObj;
+            let dbObj = {};
             dbObj = {
                 name: req.body.name,
                 desc: req.body.desc,
                 groupCreator: req.body.groupCreator,
                 college: req.body.college,
-                admins: [req.body.groupCreator],
-                members: [req.body.groupCreator]
             };
             const newGroup = new Group(dbObj);
             const dbResp = await newGroup.save();
@@ -36,7 +34,8 @@ class GroupController {
                 const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
                 const groupObj = await Group.findById({ _id: dbResp._id });
                 groupObj['logoRef'] = dbStorageRef;
-                await groupObj.save();
+                const fes = await groupObj.save();
+                console.log(fes);
             }
 
             return res.status(httpCodes.OK).send({

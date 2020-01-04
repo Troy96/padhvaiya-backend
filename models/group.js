@@ -5,9 +5,6 @@ const GroupSchema = new mongoose.Schema({
     desc: { type: String, default: null },
     groupCreator: { type: mongoose.Types.ObjectId, ref: 'User' },
     logoRef: { type: String, default: null },
-    admins: [{ type: mongoose.Types.ObjectId, ref: 'User', default: [] }],
-    members: [{ type: mongoose.Types.ObjectId, ref: 'User', default: [] }],
-    followers: [{ type: mongoose.Types.ObjectId, ref: 'User', default: [] }],
     pendingRequests: [{ type: mongoose.Types.ObjectId, ref: 'User', default: [] }],
     college: { type: mongoose.Types.ObjectId, ref: 'College', unique: true },
     createdAt: { type: Date, default: Date.now },
@@ -15,7 +12,7 @@ const GroupSchema = new mongoose.Schema({
 })
 
 
-GroupSchema.methods.storeNewMemberRequest = async function (userId) {
+/* GroupSchema.methods.storeNewMemberRequest = async function (userId) {
     let group = this;
     group['pendingRequests'].push(userId);
     return await group.save();
@@ -34,7 +31,7 @@ GroupSchema.methods.addNewFollower = async function (userId) {
     if (group['followers'].includes(userId)) return;
     group['followers'].push(userId);
     return await group.save();
-}
+} */
 
 
 const Group = mongoose.model('Group', GroupSchema, 'Group');

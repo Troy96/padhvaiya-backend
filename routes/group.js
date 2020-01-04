@@ -8,7 +8,7 @@ router.get('/:id', groupController.getById);
 router.delete('/:id', groupController.deleteById);
 router.delete('/', groupController.deleteAll);
 router.post('/:id/requestMembership', groupController.requestMembership);
-router.get('/:id/pendingRequests', groupController.getPendingMembersByGroup);
+router.post('/:id/pendingRequests', groupController.getPendingMembersByGroup);
 router.post('/:id/requestMembership/act', groupController.takeMembershipAction);
 
 module.exports = router;
