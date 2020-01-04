@@ -1,24 +1,32 @@
 const { CONSTANTS } = require('../constants');
-var nodeoutlook = require('nodejs-nodemailer-outlook')
-nodeoutlook.sendEmail
+const nodeMailer = require('nodemailer');
+
 
 class EmailController {
     constructor() {
-    }
-
-    async sendViaMail(to, subject, messageBody) {
-        nodeoutlook.sendEmail({
+        this.transporter = nodeMailer.createTransport({
+            host: CONSTANTS.EMAIL_CONFIG.HOST,
             auth: {
                 user: CONSTANTS.EMAIL_CONFIG.USER_EMAIL,
                 pass: CONSTANTS.EMAIL_CONFIG.USER_PASSWORD
-            },
-            secure: false,
+            }
+        });
+    }
+
+    async sendMail(to, subject, messageBody) {
+        const mailOptions = {
             from: CONSTANTS.EMAIL_CONFIG.USER_EMAIL,
             to: to,
             subject: subject,
-            html: messageBody,
-            onError: (e) => console.log(e),
-            onSuccess: (i) => console.log(i)
+            html: messageBody
+        };
+        this.transporter.sendMail(mailOptions, (err, info) => {
+            if (err) {
+                console.log(err);
+            }
+            else {
+                console.log('Email sent:' + info.response);
+            }
         })
     }
 }
