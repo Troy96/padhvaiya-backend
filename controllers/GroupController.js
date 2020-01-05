@@ -16,6 +16,9 @@ class GroupController {
             if (!req.body.hasOwnProperty('groupCreator')) throw new Error('groupCreator property not found!');
             if (!req.body.hasOwnProperty('college')) throw new Error('college property not found!');
 
+            const groupCreatorObj = await User.findById({_id: req.body.groupCreator});
+            if(!groupCreatorObj) throw new Error('User not found');
+            
             let dbObj = {};
             dbObj = {
                 name: req.body.name,
@@ -44,8 +47,15 @@ class GroupController {
             })
         }
         catch (e) {
+            let message = e.message;
+            switch (e.code) {
+                case 11000: {
+                    message = 'Group for college already exists!';
+                    break;
+                }
+            }
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
-                error: e.message
+                error: message
             });
         }
     }
