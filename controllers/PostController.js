@@ -1,5 +1,7 @@
 const { Answer } = require('./../models/answer');
 const { Post } = require('./../models/post');
+const { User } = require('./../models/user');
+const { Group } = require('./../models/group');
 const httpCodes = require('http-status');
 
 class PostController {
@@ -10,6 +12,22 @@ class PostController {
             if (!req.body.hasOwnProperty('desc')) throw new Error('desc property not found!');
             if (!req.body.hasOwnProperty('user')) throw new Error('user property not found!');
             if (!req.body.hasOwnProperty('group')) throw new Error('group property not found!');
+
+            const userId = req.body.user;
+            const userObj = await User.findById({ _id: userId });
+            if (!userObj) throw new Error('User not found');
+
+            const groupObj = await Group.findById({ _id: req.body.group });
+            if (!groupObj) throw new Error('Group not found');
+
+            const isUserEligibleToPost = groupObj['admins'].includes(userId) || groupObj['members'].includes(userId);
+
+            console.log(isUserEligibleToPost);
+
+            if (!isUserEligibleToPost)
+                return res.status(httpCodes.FORBIDDEN).send({
+                    error: 'User is not allowed to post!'
+                });
 
             let dbObj;
             dbObj = {
