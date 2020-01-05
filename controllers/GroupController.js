@@ -22,6 +22,8 @@ class GroupController {
                 desc: req.body.desc,
                 groupCreator: req.body.groupCreator,
                 college: req.body.college,
+                members: [req.body.groupCreator],
+                admins:[req.body.groupCreator]
             };
             const newGroup = new Group(dbObj);
             const dbResp = await newGroup.save();
@@ -34,8 +36,7 @@ class GroupController {
                 const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
                 const groupObj = await Group.findById({ _id: dbResp._id });
                 groupObj['logoRef'] = dbStorageRef;
-                const fes = await groupObj.save();
-                console.log(fes);
+                await groupObj.save();
             }
 
             return res.status(httpCodes.OK).send({
