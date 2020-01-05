@@ -19,12 +19,7 @@ class PostController {
 
             const groupObj = await Group.findById({ _id: req.body.group });
             if (!groupObj) throw new Error('Group not found');
-
-            const isUserEligibleToPost = groupObj['admins'].includes(userId) || groupObj['members'].includes(userId);
-
-            console.log(isUserEligibleToPost);
-
-            if (!isUserEligibleToPost)
+            if (!groupObj.isUserEligibleToPost(userId))
                 return res.status(httpCodes.FORBIDDEN).send({
                     error: 'User is not allowed to post!'
                 });

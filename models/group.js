@@ -36,6 +36,13 @@ GroupSchema.methods.addNewFollower = async function (userId) {
     return await group.save();
 }
 
+GroupSchema.methods.isUserEligibleToPost = function (userId) {
+    let group = this;
+    if (!(group['admins'].includes(userId) || group['members'].includes(userId)))
+        return false;
+    return true;
+}
+
 
 const Group = mongoose.model('Group', GroupSchema, 'Group');
 
