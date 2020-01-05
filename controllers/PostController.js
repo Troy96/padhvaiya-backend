@@ -19,10 +19,11 @@ class PostController {
 
             const groupObj = await Group.findById({ _id: req.body.group });
             if (!groupObj) throw new Error('Group not found');
-            if (!groupObj.isUserEligibleToPost(userId))
+            if (!groupObj.isUserEligibleToPost(userId)) {
                 return res.status(httpCodes.FORBIDDEN).send({
                     error: 'User is not allowed to post!'
                 });
+            }
 
             let dbObj;
             dbObj = {
@@ -32,7 +33,19 @@ class PostController {
             };
 
             const newPost = new Post(dbObj);
-            await newPost.save();
+            const dbResp = await newPost.save();
+
+            if (!!req.files) {
+                const fileNameExt = req.files.file.name.split('.')[1];
+                const storageName = dbResp._id.toString().concat('.').concat(fileNameExt);
+                const cloudStoreKey = 'posts/' + storageName;
+                const bufferData = req.files.file.data;
+                const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
+                await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
+                const dbObj = await Post.findById({ _id: dbResp._id });
+                dbObj['imgRef'] = dbStorageRef;
+                await dbObj.save();
+            }
 
             return res.status(httpCodes.OK).send({
                 success: true

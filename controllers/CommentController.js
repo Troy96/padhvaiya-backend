@@ -1,6 +1,8 @@
 const { Comment } = require('./../models/comment');
 const { Post } = require('./../models/post');
+const { Group } = require('./../models/group');
 const httpCodes = require('http-status');
+const { User } = require('./../models/user');
 
 class CommentController {
     constructor() { }
@@ -10,6 +12,25 @@ class CommentController {
             if (!req.body.hasOwnProperty('desc')) throw new Error('desc property not found!');
             if (!req.body.hasOwnProperty('postId')) throw new Error('postId property not found!');
             if (!req.body.hasOwnProperty('userId')) throw new Error('userId property not found!');
+
+            const userId = req.body.userId;
+            const postId = req.body.postId;
+
+            const userObj = await User.findById({ _id: userId });
+            if (!userObj) throw new Error('User not found');
+
+            const postObj = await Post.findById({ _id: postId });
+            if (!postObj) throw new Error('Post not found');
+
+            const groupId = postObj['group'];
+            const groupObj = await Group.findById({ _id: groupId });
+
+            if (!groupObj.isUserEligibleToPost(userId)) {
+                return res.status(httpCodes.FORBIDDEN).send({
+                    error: 'User is not allowed to comment'
+                })
+            }
+
             let dbObj;
             dbObj = {
                 desc: req.body.desc,
@@ -18,8 +39,7 @@ class CommentController {
             };
             const newComment = new Comment(dbObj);
             const dbResp = await newComment.save();
-            const postObj = await Post.findById({ _id: req.body.postId });
-            if (!postObj) throw new Error('Post not found');
+
             postObj.comments.push(dbResp._id);
             await postObj.save();
 
