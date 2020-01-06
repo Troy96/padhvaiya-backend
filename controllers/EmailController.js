@@ -5,8 +5,9 @@ const nodeMailer = require('nodemailer');
 class EmailController {
     constructor() {
         this.transporter = nodeMailer.createTransport({
-            host: CONSTANTS.EMAIL_CONFIG.HOST,
-            secureConnection: false,
+            /* host: CONSTANTS.EMAIL_CONFIG.HOST,
+            secureConnection: false, */
+            service: CONSTANTS.EMAIL_CONFIG.SERVICE,
             auth: {
                 user: CONSTANTS.EMAIL_CONFIG.USER_EMAIL,
                 pass: CONSTANTS.EMAIL_CONFIG.USER_PASSWORD
