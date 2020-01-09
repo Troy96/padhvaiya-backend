@@ -17,7 +17,7 @@ class GroupController {
             if (!req.body.hasOwnProperty('groupCreator')) throw new Error('groupCreator property not found!');
             if (!req.body.hasOwnProperty('college')) throw new Error('college property not found!');
 
-            const collegeObj = await College.findById({ _id: college });
+            const collegeObj = await College.findById({ _id: req.body.college });
             if (!collegeObj) throw new Error('College not found');
 
             collegeObj['hasGroup'] = true;
