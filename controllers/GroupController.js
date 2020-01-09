@@ -1,5 +1,6 @@
 const { Group } = require('./../models/group');
 const { User } = require('./../models/user');
+const { College } = require('./../models/college');
 const httpCodes = require('http-status');
 const { CloudController } = require('./CloudController');
 const { CONSTANTS } = require('../constants');
@@ -16,9 +17,15 @@ class GroupController {
             if (!req.body.hasOwnProperty('groupCreator')) throw new Error('groupCreator property not found!');
             if (!req.body.hasOwnProperty('college')) throw new Error('college property not found!');
 
-            const groupCreatorObj = await User.findById({_id: req.body.groupCreator});
-            if(!groupCreatorObj) throw new Error('User not found');
-            
+            const collegeObj = await College.findById({ _id: college });
+            if (!collegeObj) throw new Error('College not found');
+
+            collegeObj['hasGroup'] = true;
+            await collegeObj.save();
+
+            const groupCreatorObj = await User.findById({ _id: req.body.groupCreator });
+            if (!groupCreatorObj) throw new Error('User not found');
+
             let dbObj = {};
             dbObj = {
                 name: req.body.name,
@@ -26,7 +33,7 @@ class GroupController {
                 groupCreator: req.body.groupCreator,
                 college: req.body.college,
                 members: [req.body.groupCreator],
-                admins:[req.body.groupCreator]
+                admins: [req.body.groupCreator]
             };
             const newGroup = new Group(dbObj);
             const dbResp = await newGroup.save();
