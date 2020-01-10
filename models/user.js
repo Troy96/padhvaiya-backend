@@ -40,7 +40,7 @@ UserSchema.pre('findOneAndUpdate', function (next) {
 
 UserSchema.statics.verifyCredentials = function (email, password) {
     let User = this;
-    return User.findOne({ email: email })
+    return User.findOne({ email: email }).populate('college')
         .then(user => {
             if (!user) return Promise.reject('User not found!');
             return new Promise((resolve, reject) => {

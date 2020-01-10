@@ -1,4 +1,5 @@
 const { User } = require('./../models/user');
+const { Group } = require('./../models/group');
 const httpCodes = require('http-status');
 const axios = require('axios');
 
@@ -55,7 +56,7 @@ class AuthController {
                     userSocialData = await axios.get(`${GOOGLE_OAUTH_TOKEN_ENDPOINT + authToken}`);
                     if (!userSocialData.data) throw new Error('Empty response from Google server');
                     const { email } = userSocialData.data;
-                    userFromDB = await User.findOne({ email: email });
+                    userFromDB = await User.findOne({ email: email }).populate('college');
                     if (!userFromDB) throw new Error('User from social login not registered with us!');
                     break;
                 }
@@ -63,6 +64,9 @@ class AuthController {
                     throw new Error('> SOCIAL ACCOUNT NOT HANDLED');
                 }
             }
+
+            const groupObj = await Group.findById({college: userFromDB.college});
+
             const { email, given_name, family_name, name, picture } = userSocialData.data;
             return res.status(httpCodes.OK).send({
                 email,
@@ -70,7 +74,9 @@ class AuthController {
                 family_name,
                 name,
                 picture,
-                userId: userFromDB._id
+                userId: userFromDB._id,
+                college: userFromDB.college,
+                hasGroup: groupObj
             });
         }
         catch (e) {
