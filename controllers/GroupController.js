@@ -20,9 +20,6 @@ class GroupController {
             const collegeObj = await College.findById({ _id: req.body.college });
             if (!collegeObj) throw new Error('College not found');
 
-            collegeObj['hasGroup'] = true;
-            await collegeObj.save();
-
             const groupCreatorObj = await User.findById({ _id: req.body.groupCreator });
             if (!groupCreatorObj) throw new Error('User not found');
 
@@ -48,6 +45,9 @@ class GroupController {
                 groupObj['logoRef'] = dbStorageRef;
                 await groupObj.save();
             }
+            collegeObj['hasGroup'] = true;
+            collegeObj['group'] = dbResp._id;
+            await collegeObj.save();
 
             return res.status(httpCodes.OK).send({
                 success: true

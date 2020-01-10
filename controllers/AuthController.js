@@ -65,7 +65,7 @@ class AuthController {
                 }
             }
 
-            const groupObj = await Group.findById({college: userFromDB.college._id});
+            const groupObj = await Group.findById({college: userFromDB.college});
 
             const { email, given_name, family_name, name, picture } = userSocialData.data;
             return res.status(httpCodes.OK).send({

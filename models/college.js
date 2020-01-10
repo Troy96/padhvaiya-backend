@@ -7,6 +7,7 @@ const CollegeSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true, trim: true, validate: { validator: validator.isEmail, message: `Not a valid email` } },
     phone: { type: Number, required: true, min: 6000000000, max: 9999999999 },
     hasGroup: false,
+    group: { type: mongoose.Types.ObjectId, ref: 'Group', default: null },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 })

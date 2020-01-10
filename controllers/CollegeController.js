@@ -34,6 +34,7 @@ class CollegeController {
     async getAll(req, res) {
         try {
             const collegeList = await College.find({})
+                .populate('group');
             return res.status(httpCodes.OK).send(collegeList)
         } catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
@@ -47,6 +48,7 @@ class CollegeController {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
             const collegeId = req.params.id;
             const collegeObj = await College.findOne({ _id: collegeId })
+                .populate('college')
             if (!collegeObj) throw new Error('College not found!');
             return res.status(httpCodes.OK).send(collegeObj);
         }
