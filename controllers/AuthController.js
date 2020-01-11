@@ -53,10 +53,10 @@ class AuthController {
             const authToken = req.body.authToken;
             switch (socialAccount) {
                 case 'google': {
-                    //userSocialData = await axios.get(`${GOOGLE_OAUTH_TOKEN_ENDPOINT + authToken}`);
-                    //if (!userSocialData.data) throw new Error('Empty response from Google server');
-                    //const { email } = userSocialData.data;
-                    userFromDB = await User.findOne({ email: 'roy_tuhin@outlook.com' }).populate('college');
+                    userSocialData = await axios.get(`${GOOGLE_OAUTH_TOKEN_ENDPOINT + authToken}`);
+                    if (!userSocialData.data) throw new Error('Empty response from Google server');
+                    const { email } = userSocialData.data;
+                    userFromDB = await User.findOne({ email: email }).populate('college');
                     if (!userFromDB) throw new Error('User from social login not registered with us!');
                     break;
                 }
@@ -65,7 +65,7 @@ class AuthController {
                 }
             }
 
-            const groupObj = await Group.findById({college: userFromDB.college});
+            const groupObj = await Group.find({college: userFromDB.college._id});
 
             const { email, given_name, family_name, name, picture } = userSocialData.data;
             return res.status(httpCodes.OK).send({

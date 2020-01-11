@@ -178,15 +178,12 @@ class GroupController {
             if (!userObj) throw new Error('User not found');
 
             if ((groupObj['members'].includes(userId) || groupObj['followers'].includes(userId))) {
-                console.log('member');
                 statusObj['status'] = 'member';
             }
             else if (groupObj['pendingRequests'].includes(userId)) {
-                console.log('pending');
                 statusObj['status'] = 'pending';
             }
             else {
-                console.log('not a member');
                 statusObj['status'] = 'not a member';
             }
             return res.status(httpCodes.OK).send(statusObj);
