@@ -29,7 +29,6 @@ class GroupController {
                 desc: req.body.desc,
                 groupCreator: req.body.groupCreator,
                 college: req.body.college,
-                members: [req.body.groupCreator],
                 admins: [req.body.groupCreator]
             };
             const newGroup = new Group(dbObj);
@@ -177,7 +176,10 @@ class GroupController {
             const userObj = await User.findById({ _id: userId });
             if (!userObj) throw new Error('User not found');
 
-            if ((groupObj['members'].includes(userId) || groupObj['followers'].includes(userId))) {
+            if (groupObj['admins'].includes(userId)) {
+                statusObj['status'] = 'admin';
+            }
+            else if ((groupObj['members'].includes(userId) || groupObj['followers'].includes(userId))) {
                 statusObj['status'] = 'member';
             }
             else if (groupObj['pendingRequests'].includes(userId)) {
