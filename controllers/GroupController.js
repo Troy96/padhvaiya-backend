@@ -147,14 +147,14 @@ class GroupController {
         try {
             if (!req.params.hasOwnProperty('id')) throw new Error('groupId property not found');
             if (!req.body.hasOwnProperty('userId')) throw new Error('userId property not found');
-            const groupId = req.params.groupId;
+            const groupId = req.params.id;
             const userId = req.body.userId;
             const userObj = await User.findById({ _id: userId });
             const groupObj = await Group.findById({ _id: groupId });
             if (!groupObj) throw new Error('Group not found!');
             if (!userObj) throw new Error('User not found!');
             await groupObj.storeNewMemberRequest(userId);
-            return res.status(httpCodes.OK).send(groupObj)
+            return res.status(httpCodes.OK).send({success: true});
         }
         catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
