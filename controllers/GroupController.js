@@ -154,7 +154,42 @@ class GroupController {
             if (!groupObj) throw new Error('Group not found!');
             if (!userObj) throw new Error('User not found!');
             await groupObj.storeNewMemberRequest(userId);
-            return res.status(httpCodes.OK).send({success: true});
+            return res.status(httpCodes.OK).send({ success: true });
+        }
+        catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            })
+        }
+    }
+
+    async getMembershipStatus(req, res) {
+        try {
+            const statusObj = {};
+            if (!req.params.hasOwnProperty('id')) throw new Error('GroupId not found');
+            if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
+            const groupId = req.params.id;
+            const userId = req.body.userId;
+
+            const groupObj = await Group.findById({ _id: groupId });
+            if (!groupObj) throw new Error('Group not found');
+
+            const userObj = await User.findById({ _id: userId });
+            if (!userObj) throw new Error('User not found');
+
+            if ((groupObj['members'].includes(userId) || groupObj['followers'].includes(userId))) {
+                console.log('member');
+                statusObj['status'] = 'member';
+            }
+            else if (groupObj['pendingRequests'].includes(userId)) {
+                console.log('pending');
+                statusObj['status'] = 'pending';
+            }
+            else {
+                console.log('not a member');
+                statusObj['status'] = 'not a member';
+            }
+            return res.status(httpCodes.OK).send(statusObj);
         }
         catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
@@ -203,11 +238,8 @@ class GroupController {
                     groupObj.addNewFollower(userId);
                     break;
                 }
-                default: {
-                    throw new Error('Wrong actionType');
-                }
             }
-            //groupObj.pendingRequests.splice(groupObj.pendingRequests.indexOf(userId));
+            groupObj.pendingRequests.splice(groupObj.pendingRequests.indexOf(userId));
             return res.status(httpCodes.OK).send(groupObj)
 
         }
