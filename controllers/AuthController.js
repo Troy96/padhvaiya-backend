@@ -57,6 +57,7 @@ class AuthController {
                     if (!userSocialData.data) throw new Error('Empty response from Google server');
                     const { email } = userSocialData.data;
                     userFromDB = await User.findOne({ email: email }).populate('college');
+                    await userFromDB.generateAuthToken();
                     if (!userFromDB) throw new Error('User from social login not registered with us!');
                     break;
                 }
