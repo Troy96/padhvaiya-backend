@@ -17,6 +17,7 @@ const GroupSchema = new mongoose.Schema({
 
 GroupSchema.methods.storeNewMemberRequest = async function (userId) {
     let group = this;
+    if (group['pendingRequests'].includes(userId)) return;
     group['pendingRequests'].push(userId);
     return await group.save();
 }
