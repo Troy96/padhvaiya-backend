@@ -14,6 +14,7 @@ const UserSchema = new mongoose.Schema({
     college: { type: mongoose.Types.ObjectId, ref: 'College' },
     profileImg: { type: String, default: 'http://via.placeholder.com/170x170' },
     coverImg: { type: String, default: 'http://via.placeholder.com/1600x400' },
+    idCardImg: { type: String, default: null },
     createdAt: { type: Date, default: Date.now() },
     updatedAt: { type: Date, default: Date.now() }
 })

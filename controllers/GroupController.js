@@ -153,6 +153,17 @@ class GroupController {
             if (!groupObj) throw new Error('Group not found!');
             if (!userObj) throw new Error('User not found!');
             await groupObj.storeNewMemberRequest(userId);
+            if (!!req.files) {
+                const fileNameExt = req.files.file.name.split('.')[1];
+                const storageName = userId.toString().concat('.').concat(fileNameExt);
+                const cloudStoreKey = 'IdCards/' + storageName;
+                const bufferData = req.files.file.data;
+                await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
+                const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
+                userObj['idCardImg'] = dbStorageRef;
+                await userObj.save();
+            }
+            else throw new Error('ID Card not found');
             return res.status(httpCodes.OK).send({ success: true });
         }
         catch (e) {
@@ -199,6 +210,7 @@ class GroupController {
 
     async getPendingMembersByGroup(req, res) {
         try {
+            console.log(req.body);
             if (!req.params.hasOwnProperty('id')) throw new Error('groupId not found');
             if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
             const groupId = req.params.id;
@@ -229,11 +241,11 @@ class GroupController {
             const userObj = await User.findById({ _id: userId });
             if (!userObj) throw new Error('User not found!');
             switch (actionType) {
-                case 'allowMembership': {
+                case 'allow membership': {
                     groupObj.addNewMember(userId);
                     break;
                 }
-                case 'allowFollowing': {
+                case 'allow following': {
                     groupObj.addNewFollower(userId);
                     break;
                 }
