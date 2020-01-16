@@ -75,6 +75,7 @@ class AuthController {
                 picture,
                 userId: userFromDB._id,
                 college: userFromDB.college,
+                token: userFromDB.token
             });
         }
         catch (e) {
