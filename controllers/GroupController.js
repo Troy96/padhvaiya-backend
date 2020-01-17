@@ -229,11 +229,11 @@ class GroupController {
             const userObj = await User.findById({ _id: userId });
             if (!userObj) throw new Error('User not found!');
             switch (actionType) {
-                case 'allowMembership': {
+                case 'allow membership': {
                     groupObj.addNewMember(userId);
                     break;
                 }
-                case 'allowFollowing': {
+                case 'allow following': {
                     groupObj.addNewFollower(userId);
                     break;
                 }
