@@ -13,6 +13,13 @@ const PostSchema = new mongoose.Schema({
 })
 
 
+PostSchema.methods.belongsToGroup = function(groupId){
+    let post = this;
+    if(post['group'] !== groupId) return false;
+    return true;
+}
+
+
 const Post = mongoose.model('Post', PostSchema, 'Post');
 
 

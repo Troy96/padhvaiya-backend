@@ -19,7 +19,7 @@ class PostController {
 
             const groupObj = await Group.findById({ _id: req.body.group });
             if (!groupObj) throw new Error('Group not found');
-            if (!groupObj.isUserEligibleToPost(userId)) {
+            if (!groupObj.isUserEligible(userId)) {
                 return res.status(httpCodes.FORBIDDEN).send({
                     error: 'User is not allowed to post!'
                 });
@@ -180,6 +180,39 @@ class PostController {
                 .map(obj => obj['imgRef']);
             return res.status(httpCodes.OK).send(photosOfAllPostsList)
         } catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            })
+        }
+    }
+
+    async sharePost(req, res) {
+        try{
+            if(req.params.hasOwnProperty('id')) throw new Error('Post id not found');
+            if(req.body.hasOwnProperty('userId')) throw new Error('User Id not found');
+            if(!req.body.hasOwnProperty('groupId')) throw new Error('Group Id not found');
+            if(!req.body.hasOwnProperty('shareType')) throw new Error('shareType not found');
+
+            const postId = req.params.id;
+            const userId = req.body.userId;
+            const groupId = req.body.groupId;
+            
+            const postObj = await Post.findById({_id: postId});
+            if(!postObj) throw new Error('Post not found');
+
+            const userObj = await User.findById({_id: userId});
+            if(!userObj) throw new Error('User not found');
+
+            const groupObj = await Group.findById({_id: groupId});
+            if(!groupObj) throw new Error('Group not found');
+
+            if(!groupObj.isUserEligible(userId)) throw new Error('User is not eligible');
+
+            if(!postObj.belongsToGroup(groupId)) throw new Error(`Post doesn't belong to group`);
+
+
+        }
+        catch(e){
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
                 error: e.message
             })

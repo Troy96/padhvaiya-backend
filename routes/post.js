@@ -14,6 +14,6 @@ router.post('/:id/act', postController.actOnPost);
 router.get('/user/:id', postController.getByUser);
 router.get('/group/:id/photos', postController.photosByGroup);
 router.get('/group/:id', postController.getByGroup);
-router.post('/:id/share', postController.sharePost);
+router.post('/:id/share', postController.sharePost);    
 
 module.exports = router;
