@@ -7,6 +7,7 @@ const PostSchema = new mongoose.Schema({
     user: { type: mongoose.Types.ObjectId, ref: 'User' },
     group: { type: mongoose.Types.ObjectId, ref: 'Group' },
     imgRef: { type: String, default: null },
+    sharedPostRef: { type: mongoose.Types.ObjectId, ref: 'Post', default: null },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 })
