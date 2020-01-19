@@ -3,6 +3,7 @@ const { Post } = require('./../models/post');
 const { User } = require('./../models/user');
 const { Group } = require('./../models/group');
 const httpCodes = require('http-status');
+const { CONSTANTS } = require('../constants');
 
 class PostController {
     constructor() { }
@@ -188,34 +189,34 @@ class PostController {
 
     async sharePost(req, res) {
         console.log(req.params)
-        try{
-            if(!req.params.hasOwnProperty('id')) throw new Error('Post id not found');
-            if(!req.body.hasOwnProperty('userId')) throw new Error('User Id not found');
-            if(!req.body.hasOwnProperty('groupId')) throw new Error('Group Id not found');
-            if(!req.body.hasOwnProperty('shareType')) throw new Error('shareType not found');
-            if(!req.body.hasOwnProperty('desc')) throw new Error('desc not found');
+        try {
+            if (!req.params.hasOwnProperty('id')) throw new Error('Post id not found');
+            if (!req.body.hasOwnProperty('userId')) throw new Error('User Id not found');
+            if (!req.body.hasOwnProperty('groupId')) throw new Error('Group Id not found');
+            if (!req.body.hasOwnProperty('shareType')) throw new Error('shareType not found');
+            if (!req.body.hasOwnProperty('desc')) throw new Error('desc not found');
 
             const postId = req.params.id;
             const userId = req.body.userId;
             const groupId = req.body.groupId;
             const desc = req.body.desc;
-            
-            const postObj = await Post.findById({_id: postId});
-            if(!postObj) throw new Error('Post not found');
 
-            const userObj = await User.findById({_id: userId});
-           
-            const groupObj = await Group.findById({_id: groupId});
+            const postObj = await Post.findById({ _id: postId });
+            if (!postObj) throw new Error('Post not found');
+
+            const userObj = await User.findById({ _id: userId });
+
+            const groupObj = await Group.findById({ _id: groupId });
             if (!groupObj.isUserEligible(userId)) {
                 return res.status(httpCodes.FORBIDDEN).send({
                     error: 'User is not allowed to share!'
                 });
             }
-            if(!groupObj) throw new Error('Group not found');
+            if (!groupObj) throw new Error('Group not found');
 
-            if(!groupObj.isUserEligible(userId)) throw new Error('User is not eligible');
+            if (!groupObj.isUserEligible(userId)) throw new Error('User is not eligible');
 
-            if(!postObj.belongsToGroup(groupId)) throw new Error(`Post doesn't belong to group`);
+            if (!postObj.belongsToGroup(groupId)) throw new Error(`Post doesn't belong to group`);
 
             let dbObj = {};
 
@@ -244,7 +245,7 @@ class PostController {
             })
         }
 
-        catch(e){
+        catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
                 error: e.message
             })
