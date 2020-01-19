@@ -32,7 +32,7 @@ class PostController {
                 group: req.body.group
             };
 
-            const dbResp = Post.create(dbObj);
+            const dbResp = await Post.create(dbObj);
 
             if (!!req.files) {
                 const fileNameExt = req.files.file.name.split('.')[1];
