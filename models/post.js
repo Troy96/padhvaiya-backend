@@ -15,7 +15,7 @@ const PostSchema = new mongoose.Schema({
 
 PostSchema.methods.belongsToGroup = function(groupId){
     let post = this;
-    if(post['group'] !== groupId) return false;
+    if(post['group'].toString() !== groupId) return false;
     return true;
 }
 
