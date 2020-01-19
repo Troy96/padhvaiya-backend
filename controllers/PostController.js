@@ -4,9 +4,13 @@ const { User } = require('./../models/user');
 const { Group } = require('./../models/group');
 const httpCodes = require('http-status');
 const { CONSTANTS } = require('../constants');
+const {CloudController} = require('../controllers/CloudController');
+
 
 class PostController {
-    constructor() { }
+    constructor() { 
+        const cloudController = new CloudController();
+    }
 
     async create(req, res) {
         try {
