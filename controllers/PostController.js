@@ -9,7 +9,7 @@ const {CloudController} = require('../controllers/CloudController');
 
 class PostController {
 
-    cloudController;
+    cloudController
     constructor() { 
          this.cloudController = new CloudController();
     }
