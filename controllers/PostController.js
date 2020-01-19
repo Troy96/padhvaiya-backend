@@ -8,8 +8,10 @@ const {CloudController} = require('../controllers/CloudController');
 
 
 class PostController {
+
+    cloudController;
     constructor() { 
-        const cloudController = new CloudController();
+         this.cloudController = new CloudController();
     }
 
     async create(req, res) {
@@ -45,7 +47,7 @@ class PostController {
                 const cloudStoreKey = 'posts/' + storageName;
                 const bufferData = req.files.file.data;
                 const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
-                await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
+                await this.cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
                 const dbObj = await Post.findById({ _id: dbResp._id });
                 dbObj['imgRef'] = dbStorageRef;
                 await dbObj.save();
