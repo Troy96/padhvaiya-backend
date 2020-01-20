@@ -25,7 +25,7 @@ class CommentController {
             const groupId = postObj['group'];
             const groupObj = await Group.findById({ _id: groupId });
 
-            if (!groupObj.isUserEligibleToPost(userId)) {
+            if (!groupObj.isUserEligible(userId)) {
                 return res.status(httpCodes.FORBIDDEN).send({
                     error: 'User is not allowed to comment'
                 })
