@@ -57,6 +57,7 @@ class CommentController {
     async getAll(req, res) {
         try {
             const commentList = await Comment.find()
+                .populate('userId');
             return res.status(httpCodes.OK).send(commentList)
         } catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
@@ -69,7 +70,7 @@ class CommentController {
         try {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
             const commentId = req.params.id;
-            const commentObj = await Comment.findOne({ _id: commentId })
+            const commentObj = await Comment.findOne({ _id: commentId }).populate('userId');
             if (!commentObj) throw new Error('Question not found!');
             return res.status(httpCodes.OK).send(commentObj);
         }
