@@ -66,7 +66,7 @@ class PostController {
     async getAll(req, res) {
         try {
             const postList = await Post.find()
-                .populate('comments')
+                .populate({path:'comments', populate: {path: 'userId'}})
                 .populate('user')
                 .populate('group')
                 .populate('sharedPostRef')
@@ -83,7 +83,7 @@ class PostController {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
             const postId = req.params.id;
             const postObj = await Post.findOne({ _id: postId })
-                .populate('user', 'first_name last_name')
+                .populate({path: 'comments', populate: {path: 'userId'}})
                 .populate('comments')
                 .populate('group')
             if (!postObj) throw new Error('Post not found!');
