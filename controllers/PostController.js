@@ -4,13 +4,13 @@ const { User } = require('./../models/user');
 const { Group } = require('./../models/group');
 const httpCodes = require('http-status');
 const { CONSTANTS } = require('../constants');
-const {CloudController} = require('../controllers/CloudController');
+const { CloudController } = require('../controllers/CloudController');
 
 const cloudController = new CloudController();
 
 class PostController {
 
-    constructor() { 
+    constructor() {
     }
 
     async create(req, res) {
@@ -66,7 +66,7 @@ class PostController {
     async getAll(req, res) {
         try {
             const postList = await Post.find()
-                .populate({path:'comments', populate: {path: 'userId'}})
+                .populate({ path: 'comments', populate: { path: 'userId' } })
                 .populate('user')
                 .populate('group')
                 .populate('sharedPostRef')
@@ -83,9 +83,10 @@ class PostController {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
             const postId = req.params.id;
             const postObj = await Post.findOne({ _id: postId })
-                .populate({path: 'comments', populate: {path: 'userId'}})
-                .populate('comments')
+                .populate({ path: 'comments', populate: { path: 'userId' } })
+                .populate('user')
                 .populate('group')
+                .populate('sharedPostRef')
             if (!postObj) throw new Error('Post not found!');
             return res.status(httpCodes.OK).send(postObj);
         }
