@@ -31,7 +31,7 @@ class NotesController {
             const dbObj = { userId, groupId, desc, fileRefs: [] };
             if (!!req.files) {
                 (async function next(i) {
-                    if (i == req.files.file.length) {
+                    if (i == req.files.file.length - 1) {
                         await Note.create(dbObj);
                         return res.status(httpCodes.OK).send({
                             success: true
