@@ -1,5 +1,12 @@
 const { Note } = require('../models/note');
 const httpCodes = require('http-status');
+const { User } = require('../models/user');
+const { Group } = require('../models/group');
+const { CONSTANTS } = require('../constants');
+const { CloudController } = require('../controllers/CloudController');
+
+const cloudController = new CloudController();
+
 
 
 class NotesController {
@@ -11,22 +18,34 @@ class NotesController {
             if (!req.body.hasOwnProperty('groupId')) throw new Error('groupId not found');
             if (!req.body.hasOwnProperty('desc')) throw new Error('Please give a description!');
             const { userId, groupId, desc } = req.body;
-            const dbObj = { userId, groupId, desc };
-            const dbResp = await new Note(dbObj).save();
-            /* if (!!req.files) {
-                const fileNameExt = req.files.file.name.split('.')[1];
-                const storageName = dbResp._id.toString().concat('.').concat(fileNameExt);
-                const cloudStoreKey = 'notes/' + storageName;
-                const bufferData = req.files.file.data;
-                const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
-                await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
-                const dbObj = await Answer.findById({ _id: dbResp._id });
-                dbObj['imgRef'] = dbStorageRef;
-                await dbObj.save();
-            } */
-            return res.status(httpCodes.OK).send({
-                success: true
-            })
+
+            const userObj = await User.findById({ _id: userId });
+            if (!userObj) throw new Error('User not found');
+
+            const groupObj = await Group.findById({ _id: groupId });
+            if (!groupObj) throw new Error('Group not found');
+
+            if (!groupObj.isUserEligible(userId)) throw new Error('User is not eligible');
+
+
+            const dbObj = { userId, groupId, desc, fileRefs: [] };
+            if (!!req.files) {
+                (async function next(i) {
+                    if (i == req.files.file.length) {
+                        await Note.create(dbObj);
+                        return res.status(httpCodes.OK).send({
+                            success: true
+                        })
+                    }
+                    const storageName = req.files.file[i]['name'];
+                    const cloudStoreKey = 'notes/' + storageName;
+                    const bufferData = req.files.file[i]['data'];
+                    const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
+                    dbObj.fileRefs.push(dbStorageRef);
+                    await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
+                    return await next(++i);
+                }(0));
+            }
         }
         catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
