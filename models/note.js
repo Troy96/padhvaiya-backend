@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const NoteSchema = new mongoose.Schema({
     groupId:{ type: mongoose.Types.ObjectId, ref:'Group'},
     userId: { type: mongoose.Types.ObjectId, ref: 'User' },
-    fileRef: { type: String, default: null },
+    fileRefs: [{ type: String, default: null }],
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 })
