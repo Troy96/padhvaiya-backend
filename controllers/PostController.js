@@ -2,6 +2,7 @@ const { Answer } = require('./../models/answer');
 const { Post } = require('./../models/post');
 const { User } = require('./../models/user');
 const { Group } = require('./../models/group');
+const { GroupActivity } = require('../models/groupActivity');
 const httpCodes = require('http-status');
 const { CONSTANTS } = require('../constants');
 const { CloudController } = require('../controllers/CloudController');
@@ -39,6 +40,13 @@ class PostController {
             };
 
             const dbResp = await Post.create(dbObj);
+
+            await GroupActivity.create({
+                user: userId,
+                activityType: 'created',
+                activitySubject: 'post',
+                activitySubjectRef: dbResp._id
+            });
 
             if (!!req.files) {
                 const fileNameExt = req.files.file.name.split('.')[1];
