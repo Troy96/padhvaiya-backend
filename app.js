@@ -21,6 +21,7 @@ const groupRouter = require('./routes/group');
 const fileRouter = require('./routes/files');
 const passwordResetRouter = require('./routes/resetPassword');
 const notesRouter = require('./routes/notes');
+const groupActivityRouter = require('./routes/groupActivity');
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use('/colleges', collegeRouter);
 app.use('/groups', groupRouter);
 app.use('/resetPassword', passwordResetRouter);
 app.use('/notes', notesRouter);
+app.use('/activity', groupActivityRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
