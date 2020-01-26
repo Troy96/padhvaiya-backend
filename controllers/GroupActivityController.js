@@ -1,8 +1,10 @@
 class GroupActivityController {
+    
     constructor(){}
 
 
-    async create(req, res) {}
+    async create(req, res) {
+    }
 
     async getAll(req, res) {}
 
