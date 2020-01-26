@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const groupActivitySchema = new mongoose.Schema({
     user: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
+    group: {type: mongoose.Types.ObjectId, ref: 'Group', required: true},
     activityType: { type: String, enum: ['created', 'joined', 'deleted'], required: true },
     activitySubject: { type: String, enum: ['group', 'post', 'note'], required: true },
     activitySubjectRef: { type: mongoose.Types.ObjectId, default: null },

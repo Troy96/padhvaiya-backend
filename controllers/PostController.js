@@ -24,7 +24,8 @@ class PostController {
             const userObj = await User.findById({ _id: userId });
             if (!userObj) throw new Error('User not found');
 
-            const groupObj = await Group.findById({ _id: req.body.group });
+            const groupId = req.body.group;
+            const groupObj = await Group.findById({ _id: groupId });
             if (!groupObj) throw new Error('Group not found');
             if (!groupObj.isUserEligible(userId)) {
                 return res.status(httpCodes.FORBIDDEN).send({
@@ -43,6 +44,7 @@ class PostController {
 
             await GroupActivity.create({
                 user: userId,
+                group: groupId,
                 activityType: 'created',
                 activitySubject: 'post',
                 activitySubjectRef: dbResp._id

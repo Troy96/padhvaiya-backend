@@ -233,6 +233,7 @@ class GroupController {
                 case 'allow membership': {
                     await GroupActivity.create({
                         user: userId,
+                        group: groupId,
                         activityType: 'joined',
                         activitySubject: 'group'
                     });
