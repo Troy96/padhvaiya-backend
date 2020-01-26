@@ -1,6 +1,7 @@
 const { Group } = require('./../models/group');
 const { User } = require('./../models/user');
 const { College } = require('./../models/college');
+const { GroupActivity} = require('../models/groupActivity');
 const httpCodes = require('http-status');
 const { CloudController } = require('./CloudController');
 const { CONSTANTS } = require('../constants');
@@ -230,9 +231,14 @@ class GroupController {
             if (!userObj) throw new Error('User not found!');
             switch (actionType) {
                 case 'allow membership': {
+                    await GroupActivity.create({
+                        user: userId,
+                        activityType: 'joined',
+                        activitySubject: 'group'
+                    });
                     groupObj.addNewMember(userId);
                     break;
-                }
+                }   
                 case 'allow following': {
                     groupObj.addNewFollower(userId);
                     break;
