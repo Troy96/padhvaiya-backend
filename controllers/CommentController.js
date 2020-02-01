@@ -1,6 +1,7 @@
 const { Comment } = require('./../models/comment');
 const { Post } = require('./../models/post');
 const { Group } = require('./../models/group');
+const { GroupActivity } = require('./../models/groupActivity');
 const httpCodes = require('http-status');
 const { User } = require('./../models/user');
 
@@ -37,11 +38,20 @@ class CommentController {
                 postId: req.body.postId,
                 userId: req.body.userId
             };
-            const newComment = new Comment(dbObj);
-            const dbResp = await newComment.save();
+            const dbResp = await Comment.create(dbObj);
 
             postObj.comments.push(dbResp._id);
             await postObj.save();
+
+            await GroupActivity.create({
+                user: userId,
+                group: groupId,
+                activityType: 'created',
+                activitySubject: 'comment',
+                activitySubjectRef: dbResp._id,
+                type: 'comment',
+
+            });
 
             return res.status(httpCodes.OK).send({
                 success: true
