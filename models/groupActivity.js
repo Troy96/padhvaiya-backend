@@ -9,7 +9,7 @@ const groupActivitySchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
 });
-
+    
 const GroupActivity = mongoose.model('GroupActivity', groupActivitySchema, 'GroupActivity');
 
 module.exports = { GroupActivity };

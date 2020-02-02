@@ -50,7 +50,6 @@ class CommentController {
                 activitySubject: 'comment',
                 activitySubjectRef: dbResp._id,
                 type: 'comment',
-
             });
 
             return res.status(httpCodes.OK).send({
