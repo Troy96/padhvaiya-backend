@@ -9,3 +9,4 @@ let db = mongoose.connection;
 db.on('error', e => {
     throw new Error('> UNABLE TO CONNECT TO THE DATABASE! CHECK CONNECTION');
 })
+
