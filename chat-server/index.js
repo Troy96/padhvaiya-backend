@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 
 io.on('connection', client => {
 
-    console.log('client connected', client.id);
+    console.log('connected', client.id)
 
     client.on('userIsOnline', chatController.handlerUserIsOnline);
 
@@ -34,7 +34,6 @@ io.on('connection', client => {
 
     client.on('join', async (joinParams, callback)=>{
         const userObj = await User.findById({_id: joinParams.userId});
-        console.log(userObj);
         client.join(joinParams.groupId);
         client.emit('chat message', `Welcome to the group, ${userObj.first_name}`);
         client.broadcast.to(joinParams.groupId).emit('chat message', `${userObj.first_name} joined`)
@@ -46,10 +45,9 @@ io.on('connection', client => {
         console.log(client.id, 'disconnected')
     });
 
-    client.on('chat message', (obj) => {
-        console.log(obj);
-
-       io.to(obj.groupId).emit('chat message', obj.msg);
+    client.on('chat message', (obj, callback) => {
+       io.to(obj.to).emit('chat message', chatController.createMessage(obj));
+       callback();
     });
 });
 

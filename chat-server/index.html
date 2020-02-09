@@ -66,12 +66,14 @@
             });
             $('form').submit(function (e) {
                 e.preventDefault(); // prevents page reloading
-                socket.emit('chat message', {groupId: '5e19c0eb0d3e4d0b7f001b95', msg: $('#m').val()});
-                $('#m').val('');
+                socket.emit('chat message', {from:'5e196b08a4d2bf027a2bb3fa',to: '5e19c0eb0d3e4d0b7f001b95', msg: $('#m').val()}, function(msg){
+                    $('#m').val('');
+                });
                 return false;
             });
 
             socket.on('chat message', function (msg) {
+                alert(JSON.stringify(msg))
                 $('#messages').append($('<li>').text(msg));
             });
 

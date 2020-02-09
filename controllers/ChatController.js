@@ -1,5 +1,6 @@
 const {Group} = require('../models/group');
 const {User} = require('../models/user');
+const {Message} = require('../models/message');
 
 class ChatController {
     constructor() { }
@@ -15,6 +16,16 @@ class ChatController {
         userObj['lastSeen'] = new Date().toLocaleString();
         await userObj.save();
     }
+
+    async createMessage(params){
+        const newMessage = await Message.create({
+            from: params.from,
+            to: params.to,
+            text: params.msg
+        });
+        return params.msg;
+    }
+
 }
 
 module.exports = {
