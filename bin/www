@@ -20,6 +20,12 @@ app.set('port', port);
  */
 
 const server = http.createServer(app);
+const io = require('socket.io')(server,{
+  pingInterval: 6000000,
+  pingTimeout: 6000000
+});
+
+require('../chat-server/index')(io);
 
 /**
  * Listen on provided port, on all network interfaces.
