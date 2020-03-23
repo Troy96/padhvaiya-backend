@@ -51,8 +51,8 @@
         }
 
         #test {
-           margin: auto;
-           display: flex;
+            margin: auto;
+            display: flex;
         }
     </style>
     <script src="/socket.io/socket.io.js"></script>
@@ -66,8 +66,12 @@
             });
             $('form').submit(function (e) {
                 e.preventDefault(); // prevents page reloading
-                socket.emit('chat message', {from:'5e196b08a4d2bf027a2bb3fa',to: '5e19c0eb0d3e4d0b7f001b95', msg: $('#m').val()}, function(msg){
-                    $('#m').val('');
+                socket.emit('chat message', {
+                    from: '5e196b08a4d2bf027a2bb3fa',
+                    to: '5e228f19905b6902b0e6f468',
+                    msg: $('#m').val()
+                }, function () {
+                    $('#m').val()
                 });
                 return false;
             });
@@ -77,47 +81,54 @@
                 $('#messages').append($('<li>').text(msg));
             });
 
-            socket.on('onGroupMembers', function(memberList) {
+            socket.on('onGroupMembers', function (memberList) {
+                
                 alert(JSON.stringify(memberList));
             });
 
-            $('#test1').click(function(){
-                socket.emit('join' , {
+            socket.on('getChatHistory', function (chatHistory) {
+                chatHistory.map(chatObj => {
+                    $('#messages').append($('<li>').text(chatObj.text))
+                })
+            })
+
+            $('#test1').click(function () {
+                socket.emit('join', {
                     userId: '5e196b08a4d2bf027a2bb3fa',
-                    groupId:'5e19c0eb0d3e4d0b7f001b95'
-                }, err=>{
-                    if(err) throw err;
+                    roomId: '5e19c0eb0d3e4d0b7f001b95'
+                }, err => {
+                    if (err) throw err;
                 });
             })
 
-            $('#test2').click(function(){
-                socket.emit('join' , {
+            $('#test2').click(function () {
+                socket.emit('join', {
                     userId: '5e198793962e0e05ec70db73',
-                    groupId:'5e19c0eb0d3e4d0b7f001b95'
-                }, err=>{
-                    if(err) throw err;
+                    roomId: '5e19c0eb0d3e4d0b7f001b95'
+                }, err => {
+                    if (err) throw err;
                 });
             })
 
-            $('#test3').click(function(){
-                socket.emit('join' , {
+            $('#test3').click(function () {
+                socket.emit('join', {
                     userId: '5e228d71905b6902b0e6f465',
-                    groupId:'5e228f19905b6902b0e6f468'
-                }, err=>{
-                    if(err) throw err;
+                    roomId: '5e228f19905b6902b0e6f468'
+                }, err => {
+                    if (err) throw err;
                 });
             })
 
-            $('#test4').click(function(){
-                socket.emit('join' , {
+            $('#test4').click(function () {
+                socket.emit('join', {
                     userId: '5e228d71905b6902b0e6f465',
-                    groupId:'5e228f19905b6902b0e6f468'
-                }, err=>{
-                    if(err) throw err;
+                    roomId: '5e228f19905b6902b0e6f468'
+                }, err => {
+                    if (err) throw err;
                 });
             })
 
-           
+
         });
     </script>
 </head>

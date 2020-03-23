@@ -18,11 +18,6 @@ class ChatController {
     }
 
     async createMessage(params){
-        const newMessage = await Message.create({
-            from: params.from,
-            to: params.to,
-            text: params.msg
-        });
         return params.msg;
     }
 

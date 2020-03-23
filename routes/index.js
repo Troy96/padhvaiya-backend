@@ -3,7 +3,7 @@ const router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.send('WELCOME TO PADHVAIYA-API');
+  res.sendFile(__dirname + './public/index.html');
 });
 
 module.exports = router;
