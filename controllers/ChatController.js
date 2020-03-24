@@ -30,7 +30,7 @@ class ChatController {
         try {
             const messageList = await Message.find({
                 roomId: roomId
-            });
+            }).populate('from');
             return res.status(httpCodes.OK).send(messageList);
         }
         catch (e) {
