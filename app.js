@@ -52,7 +52,7 @@ app.use('/groups', groupRouter);
 app.use('/resetPassword', passwordResetRouter);
 app.use('/notes', notesRouter);
 app.use('/activity', groupActivityRouter);
-app.use('/chats/chatHistory', chatRouter);
+app.use('/chats', chatRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
