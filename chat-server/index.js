@@ -47,7 +47,8 @@ module.exports = function (io) {
             await Message.create({
                 from: obj.from,
                 to: obj.to,
-                text: obj.msg
+                text: obj.msg,
+                roomId: obj.roomId
             });
             io.to(obj.to).emit('chat message', obj.msg);
             callback();
