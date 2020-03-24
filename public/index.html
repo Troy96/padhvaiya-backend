@@ -65,11 +65,13 @@
                 socket.io.opts.transports = ['websocket'];
             });
             $('form').submit(function (e) {
+                alert('f');
                 e.preventDefault(); // prevents page reloading
                 socket.emit('chat message', {
                     from: '5e196b08a4d2bf027a2bb3fa',
-                    to: '5e228f19905b6902b0e6f468',
-                    msg: $('#m').val()
+                    to: '5e228d71905b6902b0e6f465',
+                    msg: $('#m').val(),
+                    roomId:'1234'
                 }, function () {
                     $('#m').val()
                 });

@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const MessageSchema = new mongoose.Schema({
-    from: { type: mongoose.Types.ObjectId, required: true },
-    to: { type: mongoose.Types.ObjectId, required: true },
+    from: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
+    to: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
     text: { type: String, default: null },
     roomId: { type: String, default: null },
     createdAt: { type: Date, default: Date.now },

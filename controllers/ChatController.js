@@ -30,7 +30,8 @@ class ChatController {
         try {
             const messageList = await Message.find({
                 roomId: roomId
-            }).populate('from');
+            })
+            .populate('from','profileImg');
             return res.status(httpCodes.OK).send(messageList);
         }
         catch (e) {
