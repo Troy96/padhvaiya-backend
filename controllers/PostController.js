@@ -177,7 +177,9 @@ class PostController {
             if (!req.body.hasOwnProperty('action')) throw new Error('Action not found!');
             if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
 
-            const userFromUserLike = await UserLikeModel.findOne({ user: req.body.userId, objectId: answerId, objectType: 'post' });
+            let count = null;
+
+            const userFromUserLike = await UserLikeModel.findOne({ user: req.body.userId, objectId: req.params.id, objectType: 'post' });
 
             const action = req.body.action;
             switch (action) {
@@ -196,6 +198,7 @@ class PostController {
                             isLiked: true
                         })
                     }
+                    break;
                 }
                 case 'Unlike': {
                     count = -1;
@@ -212,6 +215,7 @@ class PostController {
                             isLiked: false
                         })
                     }
+                    break
                 }
             }
             await Post.updateOne({ _id: req.params.id }, { $inc: { likes: count } }, { new: true });

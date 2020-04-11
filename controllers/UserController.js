@@ -1,6 +1,7 @@
 const { User } = require('./../models/user');
 const { Question } = require('./../models/question');
 const { Answer } = require('./../models/answer');
+const { UserLikeModel } = require('./../models/user-like');
 const httpCodes = require('http-status');
 
 class UserController {
@@ -126,6 +127,29 @@ class UserController {
             })
         }
     }
+
+    async getUserLikeStateByObjectType(req, res) {
+        try {
+            if (!req.params.hasOwnProperty('id')) throw new Error('userId not found');
+            if (!req.params.hasOwnProperty('objectType')) throw new Error('objectType not found');
+
+            const userLikeStateList = await UserLikeModel
+                .find({ user: req.params.id, objectType: req.params.objectType });
+
+            return res.status(httpCodes.OK).send({
+                success: true,
+                data: userLikeStateList
+            });
+
+        } catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                success: false,
+                error: e.message
+            })
+        }
+    }
+
+
 }
 
 module.exports = { UserController }

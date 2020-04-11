@@ -155,8 +155,9 @@ class AnswerController {
 
             const { action } = req.body;
             if (!actionType.includes(action)) throw new Error('Wrong action type');
-            // const count = action === 'Like' ? 1 : -1;
+            
             let count = null;
+            
             switch (action) {
                 case 'Like': {
                     count = 1;
@@ -173,6 +174,7 @@ class AnswerController {
                             isLiked: true
                         })
                     }
+                    break;
                 }
                 case 'Unlike': {
                     count = -1;
@@ -189,6 +191,7 @@ class AnswerController {
                             isLiked: false
                         })
                     }
+                    break;
                 }
             }
             await Answer.updateOne({ _id: answerId }, { $inc: { likes: count } }, { new: true });
