@@ -6,6 +6,7 @@ const { GroupActivity } = require('../models/groupActivity');
 const httpCodes = require('http-status');
 const { CONSTANTS } = require('../constants');
 const { CloudController } = require('../controllers/CloudController');
+const { UserLikeModel } = require('../models/user-like');
 
 const cloudController = new CloudController();
 
@@ -174,8 +175,45 @@ class PostController {
     async actOnPost(req, res) {
         try {
             if (!req.body.hasOwnProperty('action')) throw new Error('Action not found!');
+            if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
+
+            const userFromUserLike = await UserLikeModel.findOne({ user: req.body.userId, objectId: answerId, objectType: 'post' });
+
             const action = req.body.action;
-            const count = action === 'Like' ? 1 : -1;
+            switch (action) {
+                case 'Like': {
+                    count = 1;
+                    if (!userFromUserLike) {
+                        await UserLikeModel.create({
+                            user: req.body.userId,
+                            objectId: req.params.id,
+                            objectType: 'post',
+                            isLiked: true
+                        })
+                    }
+                    else {
+                        await UserLikeModel.update({
+                            isLiked: true
+                        })
+                    }
+                }
+                case 'Unlike': {
+                    count = -1;
+                    if (!userFromUserLike) {
+                        await UserLikeModel.create({
+                            user: req.body.userId,
+                            objectId: req.params.id,
+                            objectType: 'post',
+                            isLiked: false
+                        })
+                    }
+                    else {
+                        await UserLikeModel.update({
+                            isLiked: false
+                        })
+                    }
+                }
+            }
             await Post.updateOne({ _id: req.params.id }, { $inc: { likes: count } }, { new: true });
             return res.status(httpCodes.OK).send({
                 success: true
@@ -204,7 +242,6 @@ class PostController {
     }
 
     async sharePost(req, res) {
-        console.log(req.params)
         try {
             if (!req.params.hasOwnProperty('id')) throw new Error('Post id not found');
             if (!req.body.hasOwnProperty('userId')) throw new Error('User Id not found');

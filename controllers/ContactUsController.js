@@ -5,7 +5,6 @@ class ContactUsController {
     constructor() { }
 
     async create(req, res) {
-        console.log('--------------------');
         try {
             if (!req.body.hasOwnProperty('name')) throw new Error('name property not found!');
             if (!req.body.hasOwnProperty('email')) throw new Error('email property not found!');

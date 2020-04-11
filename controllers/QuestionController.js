@@ -132,10 +132,50 @@ class QuestionController {
             const ACTION_TYPE = ['Like', 'Unlike'];
             if (!req.params.hasOwnProperty('id')) throw new Error('Id not found');
             if (!req.body.hasOwnProperty('action')) throw new Error('Action not found');
+            if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
+
             const { action } = req.body;
             const questionId = req.params.id;
             if (!ACTION_TYPE.includes(action)) throw new Error('Wrong action type');
+
             const count = action === 'Like' ? 1 : -1;
+
+            switch (action) {
+                case 'Like': {
+                    count = 1;
+                    if (!userFromUserLike) {
+                        await UserLikeModel.create({
+                            user: req.body.userId,
+                            objectId: questionId,
+                            objectType: 'question',
+                            isLiked: true
+                        })
+                    }
+                    else {
+                        await UserLikeModel.update({
+                            isLiked: true
+                        })
+                    }
+                }
+                case 'Unlike': {
+                    count = -1;
+                    if (!userFromUserLike) {
+                        await UserLikeModel.create({
+                            user: req.body.userId,
+                            objectId: questionId,
+                            objectType: 'question',
+                            isLiked: false
+                        })
+                    }
+                    else {
+                        await UserLikeModel.update({
+                            isLiked: false
+                        })
+                    }
+                }
+            }
+
+
             await Question.updateOne({ _id: questionId }, { $inc: { likes: count } }, { new: true });
             return res.status(httpCodes.OK).send({
                 success: true

@@ -3,6 +3,7 @@ const { Question } = require('./../models/question');
 const { User } = require('./../models/user');
 const httpCodes = require('http-status');
 const { CloudController } = require('./CloudController');
+const { UserLikeModel } = require('../models/user-like');
 const { CONSTANTS } = require('./../constants');
 const cloudController = new CloudController();
 
@@ -146,10 +147,50 @@ class AnswerController {
             const actionType = ['Like', 'Unlike'];
             if (!req.body.hasOwnProperty('action')) throw new Error('Action not found');
             if (!req.params.hasOwnProperty('id')) throw new Error('Id not found');
-            const { action } = req.body;
+            if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
             const answerId = req.params.id;
+
+
+            const userFromUserLike = await UserLikeModel.findOne({ user: req.body.userId, objectId: answerId, objectType: 'answer' });
+
+            const { action } = req.body;
             if (!actionType.includes(action)) throw new Error('Wrong action type');
-            const count = action === 'Like' ? 1 : -1;
+            // const count = action === 'Like' ? 1 : -1;
+            let count = null;
+            switch (action) {
+                case 'Like': {
+                    count = 1;
+                    if (!userFromUserLike) {
+                        await UserLikeModel.create({
+                            user: req.body.userId,
+                            objectId: answerId,
+                            objectType: 'answer',
+                            isLiked: true
+                        })
+                    }
+                    else {
+                        await UserLikeModel.update({
+                            isLiked: true
+                        })
+                    }
+                }
+                case 'Unlike': {
+                    count = -1;
+                    if (!userFromUserLike) {
+                        await UserLikeModel.create({
+                            user: req.body.userId,
+                            objectId: answerId,
+                            objectType: 'answer',
+                            isLiked: false
+                        })
+                    }
+                    else {
+                        await UserLikeModel.update({
+                            isLiked: false
+                        })
+                    }
+                }
+            }
             await Answer.updateOne({ _id: answerId }, { $inc: { likes: count } }, { new: true });
             return res.status(httpCodes.OK).send({
                 success: true
