@@ -22,19 +22,21 @@ module.exports = function (io) {
                 .populate('admins')
                 .populate('members');
             const memberList = groupObj['admins'].concat(groupObj['members']);
-            console.log(memberList);
             client.emit('onGroupMembers', memberList);
         })
 
         client.on('join', async (joinParams, callback) => {
-            console.log('trigger', joinParams);
             const userObj = await User.findById({ _id: joinParams.userId });
             client.join(joinParams.roomId);
-            const messageHistory = await Message.find({to: joinParams.roomId});
+            const messageHistory = await Message.find({roomId: joinParams.roomId});
+            console.log('--------------------------------------------');
+            console.log(messageHistory);
+            console.log('--------------------------------------------',joinParams.roomId);
+
             io.to(joinParams.roomId).emit('getChatHistory' , messageHistory);
-            //client.emit('chat message', `Welcome to the group, ${userObj.first_name}`);
+            //client.emit('chatMessage', `Welcome to the group, ${userObj.first_name}`);
             client.broadcast.to(joinParams.roomId).emit('chat message', `${userObj.first_name} joined`)
-            //callback();
+            callback();
         })
 
 
@@ -50,7 +52,7 @@ module.exports = function (io) {
                 text: obj.msg,
                 roomId: obj.roomId
             });
-            io.to(obj.to).emit('chat message', obj.msg);
+            io.to(obj.roomId).emit('chat message', obj.msg);
             callback();
         });
     });

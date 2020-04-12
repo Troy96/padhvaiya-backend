@@ -1,5 +1,5 @@
-require('./db/conn');
 require('dotenv').config();
+require('./db/conn');
 
 const createError = require('http-errors');
 const express = require('express');
