@@ -155,9 +155,9 @@ class AnswerController {
 
             const { action } = req.body;
             if (!actionType.includes(action)) throw new Error('Wrong action type');
-            
+
             let count = null;
-            
+
             switch (action) {
                 case 'Like': {
                     count = 1;
@@ -170,9 +170,12 @@ class AnswerController {
                         })
                     }
                     else {
-                        await UserLikeModel.update({
-                            isLiked: true
-                        })
+                        await UserLikeModel.updateOne(
+                            {
+                                user: req.body.userId,
+                                objectId: answerId,
+                                objectType: 'answer'
+                            }, { $set: { isLiked: true } }, { new: true })
                     }
                     break;
                 }
@@ -187,9 +190,12 @@ class AnswerController {
                         })
                     }
                     else {
-                        await UserLikeModel.update({
-                            isLiked: false
-                        })
+                        await UserLikeModel.updateOne(
+                            {
+                                user: req.body.userId,
+                                objectId: answerId,
+                                objectType: 'answer'
+                            }, { $set: { isLiked: false } }, { new: true })
                     }
                     break;
                 }

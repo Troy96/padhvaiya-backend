@@ -184,42 +184,44 @@ class PostController {
             const action = req.body.action;
             switch (action) {
                 case 'Like': {
-                    console.log('like enter', req.body.action, req.body.userId, req.params.id);
                     count = 1;
                     if (!userFromUserLike) {
-                        console.log('like if', req.body.action, req.body.userId, req.params.id);
                         await UserLikeModel.create({
                             user: req.body.userId,
-                            objectId: req.params.id,
+                            objectId: answerId,
                             objectType: 'post',
                             isLiked: true
                         })
                     }
                     else {
-                        console.log('like else', req.body.action, req.body.userId, req.params.id);
                         await UserLikeModel.updateOne(
-                            { $set: { "isLiked": true } }, { new: true })
+                            {
+                                user: req.body.userId,
+                                objectId: answerId,
+                                objectType: 'post'
+                            }, { $set: { isLiked: true } }, { new: true })
                     }
                     break;
                 }
                 case 'Unlike': {
-                    console.log('unlike if', req.body.action, req.body.userId, req.params.id);
-
                     count = -1;
                     if (!userFromUserLike) {
                         await UserLikeModel.create({
                             user: req.body.userId,
-                            objectId: req.params.id,
+                            objectId: answerId,
                             objectType: 'post',
                             isLiked: false
                         })
                     }
                     else {
-                        console.log('unlike else', req.body.action, req.body.userId, req.params.id);
                         await UserLikeModel.updateOne(
-                            { $set: { "isLiked": false } }, { new: true })
+                            {
+                                user: req.body.userId,
+                                objectId: answerId,
+                                objectType: 'post'
+                            }, { $set: { isLiked: false } }, { new: true })
                     }
-                    break
+                    break;
                 }
             }
             await Post.updateOne({ _id: req.params.id }, { $inc: { likes: count } }, { new: true });
