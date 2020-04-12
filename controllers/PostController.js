@@ -184,8 +184,10 @@ class PostController {
             const action = req.body.action;
             switch (action) {
                 case 'Like': {
+                    console.log('like enter', req.body.action, req.body.userId, req.params.id);
                     count = 1;
                     if (!userFromUserLike) {
+                        console.log('like if', req.body.action, req.body.userId, req.params.id);
                         await UserLikeModel.create({
                             user: req.body.userId,
                             objectId: req.params.id,
@@ -194,6 +196,7 @@ class PostController {
                         })
                     }
                     else {
+                        console.log('like else', req.body.action, req.body.userId, req.params.id);
                         await UserLikeModel.update({
                             isLiked: true
                         })
@@ -201,6 +204,8 @@ class PostController {
                     break;
                 }
                 case 'Unlike': {
+                    console.log('unlike if', req.body.action, req.body.userId, req.params.id);
+
                     count = -1;
                     if (!userFromUserLike) {
                         await UserLikeModel.create({
@@ -211,6 +216,7 @@ class PostController {
                         })
                     }
                     else {
+                        console.log('unlike else', req.body.action, req.body.userId, req.params.id);
                         await UserLikeModel.update({
                             isLiked: false
                         })
