@@ -197,9 +197,8 @@ class PostController {
                     }
                     else {
                         console.log('like else', req.body.action, req.body.userId, req.params.id);
-                        await UserLikeModel.update({
-                            isLiked: true
-                        })
+                        await UserLikeModel.updateOne(
+                            { $set: { "isLiked": true } }, { new: true })
                     }
                     break;
                 }
@@ -217,9 +216,8 @@ class PostController {
                     }
                     else {
                         console.log('unlike else', req.body.action, req.body.userId, req.params.id);
-                        await UserLikeModel.update({
-                            isLiked: false
-                        })
+                        await UserLikeModel.updateOne(
+                            { $set: { "isLiked": false } }, { new: true })
                     }
                     break
                 }
