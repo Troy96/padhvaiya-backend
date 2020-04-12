@@ -177,6 +177,8 @@ class PostController {
             if (!req.body.hasOwnProperty('action')) throw new Error('Action not found!');
             if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
 
+            const postId = req.params.id;
+
             let count = null;
 
             const userFromUserLike = await UserLikeModel.findOne({ user: req.body.userId, objectId: req.params.id, objectType: 'post' });
@@ -188,7 +190,7 @@ class PostController {
                     if (!userFromUserLike) {
                         await UserLikeModel.create({
                             user: req.body.userId,
-                            objectId: answerId,
+                            objectId: postId,
                             objectType: 'post',
                             isLiked: true
                         })
@@ -197,7 +199,7 @@ class PostController {
                         await UserLikeModel.updateOne(
                             {
                                 user: req.body.userId,
-                                objectId: answerId,
+                                objectId: postId,
                                 objectType: 'post'
                             }, { $set: { isLiked: true } }, { new: true })
                     }
@@ -208,7 +210,7 @@ class PostController {
                     if (!userFromUserLike) {
                         await UserLikeModel.create({
                             user: req.body.userId,
-                            objectId: answerId,
+                            objectId: postId,
                             objectType: 'post',
                             isLiked: false
                         })
@@ -217,14 +219,14 @@ class PostController {
                         await UserLikeModel.updateOne(
                             {
                                 user: req.body.userId,
-                                objectId: answerId,
+                                objectId: postId,
                                 objectType: 'post'
                             }, { $set: { isLiked: false } }, { new: true })
                     }
                     break;
                 }
             }
-            await Post.updateOne({ _id: req.params.id }, { $inc: { likes: count } }, { new: true });
+            await Post.updateOne({ _id: postId }, { $inc: { likes: count } }, { new: true });
             return res.status(httpCodes.OK).send({
                 success: true
             });
