@@ -8,7 +8,7 @@ const chatController = new ChatController();
 
 
 module.exports = function (io) {
-    
+
     io.on('connection', client => {
 
         console.log('connected', client.id)
@@ -28,12 +28,9 @@ module.exports = function (io) {
         client.on('join', async (joinParams, callback) => {
             const userObj = await User.findById({ _id: joinParams.userId });
             client.join(joinParams.roomId);
-            const messageHistory = await Message.find({roomId: joinParams.roomId});
-            console.log('--------------------------------------------');
-            console.log(messageHistory);
-            console.log('--------------------------------------------',joinParams.roomId);
+            const messageHistory = await Message.find({ roomId: joinParams.roomId })
 
-            io.to(joinParams.roomId).emit('getChatHistory' , messageHistory);
+            io.to(joinParams.roomId).emit('getChatHistory', messageHistory);
             //client.emit('chatMessage', `Welcome to the group, ${userObj.first_name}`);
             client.broadcast.to(joinParams.roomId).emit('chat message', `${userObj.first_name} joined`)
             callback();
@@ -44,16 +41,18 @@ module.exports = function (io) {
             console.log(client.id, 'disconnected')
         });
 
-        client.on('chat message', async (obj, callback) => {
-            console.log(obj);
+        client.on('chat message', async (obj) => {
+            console.log(obj,'------------------');
             await Message.create({
                 from: obj.from,
                 to: obj.to,
                 text: obj.msg,
                 roomId: obj.roomId
             });
-            io.to(obj.roomId).emit('chat message', obj.msg);
-            callback();
+            client.emit('chatMessage', `new msg client`);
+
+            io.to(obj.roomId).emit('chatMessage', 'testttt');
+
         });
     });
 }
