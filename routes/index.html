@@ -62,8 +62,8 @@
             var socket = io({ transports: ['websocket'] });
 
             socket.on('connect', () => {
-                let groupRoomID = 'vellore1234';
-                socket.emit('sendJoinRequest', { groupRoomID: groupRoomID, joinType: 'group' });
+                let roomID = 'vellore1234';
+                socket.emit('sendJoinRequest', { groupRoomID: roomID, joinType: 'group' });
             })
 
             socket.on('onJoined', joiningMessage => console.log(joiningMessage));

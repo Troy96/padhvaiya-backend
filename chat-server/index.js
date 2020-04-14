@@ -43,7 +43,7 @@ module.exports = function (io) {
         client.on('sendJoinRequest', joinParams => {
             switch (joinParams.joinType) {
                 case 'group': {
-                    client.join(joinParams.groupRoomID);
+                    client.join(joinParams.roomID);
                     client.emit('onJoined', 'Joined...')
                     break;
                 }
