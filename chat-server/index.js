@@ -29,8 +29,6 @@ module.exports = function (io) {
             const userObj = await User.findById({ _id: joinParams.userId });
             client.join(joinParams.roomId);
             const messageHistory = await Message.find({ roomId: joinParams.roomId })
-
-            io.to(joinParams.roomId).emit('getChatHistory', messageHistory);
             //client.emit('chatMessage', `Welcome to the group, ${userObj.first_name}`);
             client.broadcast.to(joinParams.roomId).emit('chat message', `${userObj.first_name} joined`)
             callback();
@@ -40,10 +38,13 @@ module.exports = function (io) {
             console.log(client.id, 'disconnected')
         });
 
-        client.on('sendJoinRequest', joinParams => {
+        client.on('sendJoinRequest', async joinParams => {
+            client.join(joinParams.roomId);
+            const messageHistory = await Message.find({ roomId: joinParams.roomId })
+                .populate('from', 'profileImg')
+            io.to(joinParams.roomId).emit('getChatHistory', messageHistory);
             switch (joinParams.joinType) {
                 case 'group': {
-                    client.join(joinParams.roomID);
                     client.emit('onJoined', 'Joined...')
                     break;
                 }
@@ -51,14 +52,18 @@ module.exports = function (io) {
         })
 
         client.on('chatMessage', async (obj) => {
+            console.log('neww');
+            io.emit('newMessage', {
+                from: obj.from,
+                msg: obj.msg,
+                time: Date.now()
+            });
             await Message.create({
                 from: obj.from,
                 to: obj.to,
                 text: obj.msg,
                 roomId: obj.roomId
             });
-
-            io.to(obj.roomId).emit('chatMessage', obj.msg);
         });
     });
 }
