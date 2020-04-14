@@ -36,23 +36,29 @@ module.exports = function (io) {
             callback();
         })
 
-
         client.on('disconnect', () => {
             console.log(client.id, 'disconnected')
         });
 
-        client.on('chat message', async (obj) => {
-            console.log(obj,'------------------');
+        client.on('sendJoinRequest', joinParams => {
+            switch (joinParams.joinType) {
+                case 'group': {
+                    client.join(joinParams.groupRoomID);
+                    client.emit('onJoined', 'Joined...')
+                    break;
+                }
+            }
+        })
+
+        client.on('chatMessage', async (obj) => {
             await Message.create({
                 from: obj.from,
                 to: obj.to,
                 text: obj.msg,
                 roomId: obj.roomId
             });
-            client.emit('chatMessage', `new msg client`);
 
-            io.to(obj.roomId).emit('chatMessage', 'testttt');
-
+            io.to(obj.roomId).emit('chatMessage', obj.msg);
         });
     });
 }

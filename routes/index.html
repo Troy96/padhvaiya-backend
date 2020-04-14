@@ -61,30 +61,35 @@
         $(function () {
             var socket = io({ transports: ['websocket'] });
 
+            socket.on('connect', () => {
+                let groupRoomID = 'vellore1234';
+                socket.emit('sendJoinRequest', { groupRoomID: groupRoomID, joinType: 'group' });
+            })
+
+            socket.on('onJoined', joiningMessage => console.log(joiningMessage));
+
             socket.on('reconnect_attempt', () => {
                 socket.io.opts.transports = ['websocket'];
             });
+
             $('form').submit(function (e) {
-                alert('f');
                 e.preventDefault(); // prevents page reloading
-                socket.emit('chat message', {
+                socket.emit('chatMessage', {
                     from: '5e196b08a4d2bf027a2bb3fa',
                     to: '5e228d71905b6902b0e6f465',
                     msg: $('#m').val(),
-                    roomId:'1234'
+                    roomId: 'vellore1234'
                 }, function () {
                     $('#m').val()
                 });
                 return false;
             });
 
-            socket.on('chat message', function (msg) {
-                alert(JSON.stringify(msg))
+            socket.on('chatMessage', function (msg) {
                 $('#messages').append($('<li>').text(msg));
             });
 
             socket.on('onGroupMembers', function (memberList) {
-                
                 alert(JSON.stringify(memberList));
             });
 

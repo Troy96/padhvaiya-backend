@@ -40,7 +40,7 @@ app.use(cors({
   methods: 'GET, HEAD, PUT, POST, DELETE'
 }));
 
-app.use('/', indexRouter);
+app.use('/home', indexRouter);
 app.use('/users', usersRouter);
 app.use('/questions', questionsRouter);
 app.use('/answers', answerRouter);
