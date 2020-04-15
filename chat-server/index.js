@@ -52,7 +52,6 @@ module.exports = function (io) {
         })
 
         client.on('chatMessage', async (obj) => {
-            console.log('neww');
             io.emit('newMessage', {
                 from: obj.from,
                 msg: obj.msg,

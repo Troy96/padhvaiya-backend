@@ -85,8 +85,8 @@
                 return false;
             });
 
-            socket.on('chatMessage', function (msg) {
-                $('#messages').append($('<li>').text(msg));
+            socket.on('newMessage', function (msg) {
+                $('#messages').append($('<li>').text(msg.msg));
             });
 
             socket.on('onGroupMembers', function (memberList) {
