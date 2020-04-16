@@ -52,8 +52,6 @@ module.exports = function (io) {
         })
 
         client.on('chatMessage', async (obj) => {
-            console.log(obj);
-            console.log('-----');
             const user = await User.findById({ _id: obj.from });
             io.to(obj.roomId).emit('newMessage', {
                 from: {
