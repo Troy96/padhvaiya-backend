@@ -7,9 +7,9 @@ class ChatController {
     constructor() { }
 
     async handlerUserIsOnline(userId) {
-        // const userObj = await User.findById({ _id: userId });
-        // userObj['lastSeen'] = 'online';
-        // await userObj.save();
+        const userObj = await User.findById({ _id: userId });
+        userObj['lastSeen'] = 'online';
+        await userObj.save();
     }
 
     async handlerUserIsOffline(userId) {

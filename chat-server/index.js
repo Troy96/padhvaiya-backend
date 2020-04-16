@@ -52,10 +52,18 @@ module.exports = function (io) {
         })
 
         client.on('chatMessage', async (obj) => {
-            io.emit('newMessage', {
-                from: obj.from,
-                msg: obj.msg,
-                time: Date.now()
+            console.log(obj);
+            console.log('-----');
+            const user = await User.findById({ _id: obj.from });
+            io.to(obj.roomId).emit('newMessage', {
+                from: {
+                    profileImg: user.profileImg,
+                    _id: user._id
+                },
+                to: obj.to,
+                text: obj.msg,
+                createdAt: Date.now(),
+                roomId: obj.roomId
             });
             await Message.create({
                 from: obj.from,
