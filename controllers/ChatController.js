@@ -2,6 +2,7 @@ const { Group } = require('../models/group');
 const { User } = require('../models/user');
 const { Message } = require('../models/message');
 const httpCodes = require('http-status');
+const { Room } = require('../models/rooms');
 
 class ChatController {
     constructor() { }
@@ -12,10 +13,16 @@ class ChatController {
         await userObj.save();
     }
 
-    async handlerUserIsOffline(userId) {
-        const userObj = await User.findById({ _id: userId });
-        userObj['lastSeen'] = new Date().toLocaleString();
-        await userObj.save();
+    async handlerUserIsOffline(paramObj) {
+        // console.log('------------sdsdsd--------------');
+        // const roomIds = paramObj.roomIds;
+
+        // // for await (let room of roomIds) {
+        // //     await Room.findByIdAndDelete({ roomId: room });
+        // // }
+        // const userObj = await User.findById({ _id: paramObj.userId });
+        // userObj['lastSeen'] = new Date().toLocaleString();
+        // await userObj.save();
     }
 
     async createMessage(params) {
@@ -31,7 +38,7 @@ class ChatController {
             const messageList = await Message.find({
                 roomId: roomId
             })
-            .populate('from','profileImg');
+                .populate('from', 'profileImg');
             return res.status(httpCodes.OK).send(messageList);
         }
         catch (e) {
