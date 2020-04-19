@@ -13,16 +13,10 @@ class ChatController {
         await userObj.save();
     }
 
-    async handlerUserIsOffline(paramObj) {
-        // console.log('------------sdsdsd--------------');
-        // const roomIds = paramObj.roomIds;
-
-        // // for await (let room of roomIds) {
-        // //     await Room.findByIdAndDelete({ roomId: room });
-        // // }
-        // const userObj = await User.findById({ _id: paramObj.userId });
-        // userObj['lastSeen'] = new Date().toLocaleString();
-        // await userObj.save();
+    async handlerUserIsOffline(userId) {
+        const userObj = await User.findById({ _id: userId });
+        userObj['lastSeen'] = new Date().toLocaleString();
+        await userObj.save();
     }
 
     async createMessage(params) {
