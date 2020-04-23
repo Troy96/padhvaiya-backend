@@ -80,12 +80,9 @@ class UserController {
         try {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
             const userId = req.params.id;
-            await User.findByIdAndDelete({ _id: userId });
-            let countOfQuestions = await Question.countDocuments({ userId: userId });
-            if (countOfQuestions > 0) await Question.remove({ userId: userId });
-            await User.findByIdAndDelete({ _id: userId });
-            let countOfAnswers = await Answer.countDocuments({ userId: userId });
-            if (countOfAnswers > 0) await Answer.remove({ userId: userId });
+            await User.deleteOne({ _id: userId });
+            await Question.deleteMany({ userId: userId });
+            await Answer.deleteMany({ userId: userId });
             return res.sendStatus(httpCodes.OK)
         }
         catch (e) {
@@ -98,6 +95,8 @@ class UserController {
     async deleteAll(req, res) {
         try {
             await User.deleteMany();
+            await Question.deleteMany();
+            await Answer.deleteMany();
             return res.sendStatus(httpCodes.OK);
         }
         catch (e) {
