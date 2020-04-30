@@ -12,16 +12,14 @@ class AnswerController {
 
     async create(req, res) {
         try {
-            if (!req.body.hasOwnProperty('desc')) throw new Error('Answer desc property not found!');
             if (!req.body.hasOwnProperty('questionId')) throw new Error('questionId property not found!');
-            let dbObj;
-            dbObj = {
-                desc: req.body.desc,
-                questionId: req.body.questionId
-            };
+            let dbObj = {};
+            if(req.body.desc) dbObj['desc'] = req.body.desc;
+            dbObj['questionId'] = req.body.questionId;
             if (req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
             const newAnswer = new Answer(dbObj);
             const dbResp = await newAnswer.save();
+           
             if (!!req.files) {
                 const fileNameExt = req.files.file.name.split('.')[1];
                 const storageName = dbResp._id.toString().concat('.').concat(fileNameExt);
@@ -44,7 +42,8 @@ class AnswerController {
             questionObj.answers.push(dbResp._id);
             await questionObj.save();
             return res.status(httpCodes.OK).send({
-                success: true
+                success: true,
+                data: dbResp
             })
         }
         catch (e) {
