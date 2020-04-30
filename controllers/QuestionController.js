@@ -12,9 +12,10 @@ class QuestionController {
 
     async create(req, res) {
         try {
-            if (!req.body.hasOwnProperty('desc')) throw new Error('desc property not found!');
-            const desc = req.body.desc;
-            if (!desc) throw new Error('Question desc not found!');
+            let desc= '';
+            if (req.body.hasOwnProperty('desc')){
+                desc = req.body.desc;
+            } 
             let dbObj = { desc: desc };
             if (req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
             const newQuestion = new Question(dbObj);
@@ -37,7 +38,8 @@ class QuestionController {
                 await userObj.save();
             }
             return res.status(httpCodes.OK).send({
-                success: true
+                success: true,
+                data: dbResp
             });
         }
         catch (e) {

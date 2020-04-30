@@ -27,6 +27,7 @@ class PasswordResetController {
                     <h3><a href=${passwordResetLink}>${passwordResetLink}</a></h3>
                 </body>
             </html>`
+            console.log(email, user, passwordResetLink);
             await emailController.sendMail(email, 'Padhvaiya: Password Reset Link', htmlBody);
             return res.status(httpCodes.OK).send({
                 success: true
