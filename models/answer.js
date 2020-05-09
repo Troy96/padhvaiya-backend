@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const AnswerSchema = new mongoose.Schema({
-    desc: { type: String, required: true, trim: true },
+    desc: { type: String, trim: true },
     questionId: { type: mongoose.Types.ObjectId, ref: 'Question' },
     userId: { type: mongoose.Types.ObjectId, ref: 'User' },
     likes: { type: Number, default: 0 },
