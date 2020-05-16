@@ -79,7 +79,6 @@ class UserController {
                 user: userObj,
                 groups: allGroups
             };
-
             return res.status(httpCodes.OK).send(respObj);
         }
         catch (e) {
