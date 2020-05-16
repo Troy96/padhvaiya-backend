@@ -2,6 +2,7 @@ const { User } = require('./../models/user');
 const { Question } = require('./../models/question');
 const { Answer } = require('./../models/answer');
 const { UserLikeModel } = require('./../models/user-like');
+const { Group } = require('./../models/group');
 const httpCodes = require('http-status');
 
 class UserController {
@@ -61,13 +62,25 @@ class UserController {
         try {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
             const userId = req.params.id;
-            const userObj = await User.findOne({ _id: userId })
+            let userObj = await User.findOne({ _id: userId })
                 .populate('questions')
                 .populate('answers')
                 .populate('college')
                 .exec();
             if (!userObj) throw new Error('User not found!');
-            return res.status(httpCodes.OK).send(userObj);
+
+            const creatorGroup = await Group.find({ admins: { $all: [userId] } });
+            const membershipGroups = await Group.find({ members: { $all: [userId] } });
+            const followingGroups = await Group.find({ followers: { $all: [userId] } });
+
+            const allGroups = [...creatorGroup, ...membershipGroups, ...followingGroups];
+
+            let respObj = {
+                user: userObj,
+                groups: allGroups
+            };
+
+            return res.status(httpCodes.OK).send(respObj);
         }
         catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
