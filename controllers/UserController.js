@@ -65,9 +65,10 @@ class UserController {
             let userObj = await User.findOne({ _id: userId })
                 .populate('questions')
                 .populate('answers')
-                .populate('college')
                 .exec();
             if (!userObj) throw new Error('User not found!');
+
+            console.log(userObj)
 
             const creatorGroup = await Group.find({ admins: { $all: [userId] } });
             const membershipGroups = await Group.find({ members: { $all: [userId] } });

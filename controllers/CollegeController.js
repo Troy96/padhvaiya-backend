@@ -1,4 +1,8 @@
 const { College } = require('./../models/college');
+const { User } = require('../models/user');
+const { Question } = require('../models/question');
+const { Answer } = require('../models/answer');
+
 const httpCodes = require('http-status');
 
 class CollegeController {
@@ -64,6 +68,7 @@ class CollegeController {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
             const collegeId = req.params.id;
             await College.findByIdAndDelete({ _id: collegeId });
+            await User.deleteMany({ college: collegeId });
             return res.status(httpCodes.OK).send({
                 success: true
             })
