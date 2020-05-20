@@ -69,7 +69,7 @@ class QuestionController {
             const questionId = req.params.id;
             const questionObj = await Question.findOne({ _id: questionId })
                 .populate('userId')
-                .populate('answers')
+                .populate({ path: 'answers', populate: { path: 'userId' } })
                 .exec();
             if (!questionObj) throw new Error('Question not found!');
             return res.status(httpCodes.OK).send(questionObj);
