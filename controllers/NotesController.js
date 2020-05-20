@@ -29,37 +29,37 @@ class NotesController {
 
 
             const dbObj = { userId, groupId, desc, fileRefs: [] };
-            if (!req.files) throw new Error('Please upload some notes'); 
-                if (req.files.file.length === undefined) {
-                    const storageName = req.files.file['name'];
+            if (!req.files) throw new Error('Please upload some notes');
+            if (req.files.file.length === undefined) {
+                const storageName = req.files.file['name'];
+                const cloudStoreKey = 'notes/' + storageName;
+                const bufferData = req.files.file['data'];
+                const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
+                dbObj.fileRefs.push(dbStorageRef);
+                await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
+                await Note.create(dbObj);
+                return res.status(httpCodes.OK).send({
+                    success: true
+                })
+            }
+            else {
+                (async function next(i) {
+                    if (i == req.files.file.length) {
+                        await Note.create(dbObj);
+                        return res.status(httpCodes.OK).send({
+                            success: true
+                        })
+                    }
+                    const storageName = req.files.file[i]['name'];
                     const cloudStoreKey = 'notes/' + storageName;
-                    const bufferData = req.files.file['data'];
+                    const bufferData = req.files.file[i]['data'];
                     const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
                     dbObj.fileRefs.push(dbStorageRef);
                     await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
-                    await Note.create(dbObj);
-                    return res.status(httpCodes.OK).send({
-                        success: true
-                    })
-                }
-                else {
-                    (async function next(i) {
-                        if (i == req.files.file.length) {
-                            await Note.create(dbObj);
-                            return res.status(httpCodes.OK).send({
-                                success: true
-                            })
-                        }
-                        const storageName = req.files.file[i]['name'];
-                        const cloudStoreKey = 'notes/' + storageName;
-                        const bufferData = req.files.file[i]['data'];
-                        const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
-                        dbObj.fileRefs.push(dbStorageRef);
-                        await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
-                        return await next(++i);
+                    return await next(++i);
 
-                    }(0));
-                }
+                }(0));
+            }
         }
         catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
@@ -90,6 +90,22 @@ class NotesController {
             if (!noteObj) throw new Error('Note not found');
             return res.status(httpCodes.OK).send(noteObj);
         }
+        catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            })
+        }
+    }
+
+    async getByGroup(req, res) {
+        try {
+            if (!req.params.hasOwnProperty('groupId')) throw new Error('GroupId not found');
+
+            const notesByGroup = await Note.find({ groupId: req.params.groupId })
+                .populate('userId');
+            return res.status(httpCodes.OK).send(notesByGroup)
+        }
+
         catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
                 error: e.message

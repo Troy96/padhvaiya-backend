@@ -8,6 +8,7 @@ router.get('/', notesController.getAll);
 router.get('/:id', notesController.getById);
 router.delete('/', notesController.deleteAll);
 router.delete('/:id', notesController.deleteById);
+router.get('/groups/:groupId', notesController.getByGroup);
 
 
 module.exports = router;
