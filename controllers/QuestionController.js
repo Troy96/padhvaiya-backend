@@ -68,7 +68,7 @@ class QuestionController {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
             const questionId = req.params.id;
             const questionObj = await Question.findOne({ _id: questionId })
-                .populate('userId', 'first_name last_name')
+                .populate('userId')
                 .populate('answers')
                 .exec();
             if (!questionObj) throw new Error('Question not found!');
