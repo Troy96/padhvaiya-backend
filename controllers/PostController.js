@@ -130,8 +130,7 @@ class PostController {
             if (!req.params.hasOwnProperty('id')) throw new Error('Property id not found');
             const groupId = req.params.id;
             const postList = await Post.find({ group: groupId })
-                .populate('user')
-                .populate('comments')
+                .populate({ path: 'comments', populate: { path: 'userId' } })
                 .populate('group')
             return res.status(httpCodes.OK).send(postList);
         }
