@@ -77,6 +77,7 @@ class QuestionController {
         catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
                 error: e.message
+                
             });
         }
     }
