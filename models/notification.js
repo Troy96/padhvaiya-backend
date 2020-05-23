@@ -7,8 +7,8 @@ const NotificationSchema = new mongoose.Schema({
     operation: { type: String, enum: ['asked', 'answered'] }
 });
 
-const NotificationModel = mongoose.model('Notification', NotificationSchema, 'Notification');
+const Notification = mongoose.model('Notification', NotificationSchema, 'Notification');
 
 module.exports = {
-    NotificationModel
+    Notification
 }

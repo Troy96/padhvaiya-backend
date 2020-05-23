@@ -1,6 +1,7 @@
 const { Question } = require('./../models/question');
 const { User } = require('./../models/user');
 const { Answer } = require('./../models/answer');
+const { Notification } = require('./../models/notification');
 const httpCodes = require('http-status');
 const { CloudController } = require('./CloudController');
 const { CONSTANTS } = require('./../constants');
@@ -12,10 +13,10 @@ class QuestionController {
 
     async create(req, res) {
         try {
-            let desc= '';
-            if (req.body.hasOwnProperty('desc')){
+            let desc = '';
+            if (req.body.hasOwnProperty('desc')) {
                 desc = req.body.desc;
-            } 
+            }
             let dbObj = { desc: desc };
             if (req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
             const newQuestion = new Question(dbObj);
@@ -37,6 +38,14 @@ class QuestionController {
                 userObj.questions.push(dbResp._id);
                 await userObj.save();
             }
+
+            await Notification.create({
+                actor: req.body.userId,
+                entityType: 'question',
+                entityId: dbResp._id,
+                operation: 'asked'
+            });
+
             return res.status(httpCodes.OK).send({
                 success: true,
                 data: dbResp
@@ -76,7 +85,7 @@ class QuestionController {
         catch (e) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
                 error: e.message
-                
+
             });
         }
     }

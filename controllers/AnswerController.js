@@ -4,6 +4,7 @@ const { User } = require('./../models/user');
 const httpCodes = require('http-status');
 const { CloudController } = require('./CloudController');
 const { UserLikeModel } = require('../models/user-like');
+const { Notification } = require('./../models/notification');
 const { CONSTANTS } = require('./../constants');
 const cloudController = new CloudController();
 
@@ -14,12 +15,12 @@ class AnswerController {
         try {
             if (!req.body.hasOwnProperty('questionId')) throw new Error('questionId property not found!');
             let dbObj = {};
-            if(req.body.desc) dbObj['desc'] = req.body.desc;
+            if (req.body.desc) dbObj['desc'] = req.body.desc;
             dbObj['questionId'] = req.body.questionId;
             if (req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
             const newAnswer = new Answer(dbObj);
             const dbResp = await newAnswer.save();
-           
+
             if (!!req.files) {
                 const fileNameExt = req.files.file.name.split('.')[1];
                 const storageName = dbResp._id.toString().concat('.').concat(fileNameExt);
@@ -41,6 +42,14 @@ class AnswerController {
             if (!questionObj) throw new Error('Question not found');
             questionObj.answers.push(dbResp._id);
             await questionObj.save();
+
+            await Notification.create({
+                actor: req.body.userId,
+                entityType: 'answer',
+                entityId: dbResp._id,
+                operation: 'answered'
+            });
+
             return res.status(httpCodes.OK).send({
                 success: true,
                 data: dbResp
