@@ -6,7 +6,8 @@ class NotificationController {
 
     async getAll(req, res) {
         try {
-            const notificationList = await Notification.find({});
+            const notificationList = await Notification.find({})
+                .populate('actor');
             return res.status(httpCodes.OK).send(notificationList);
         }
 
