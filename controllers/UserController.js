@@ -3,7 +3,9 @@ const { Question } = require('./../models/question');
 const { Answer } = require('./../models/answer');
 const { UserLikeModel } = require('./../models/user-like');
 const { Group } = require('./../models/group');
+const { EmailController } = require('../controllers/EmailController');
 const httpCodes = require('http-status');
+
 
 class UserController {
     constructor() { }
@@ -25,6 +27,14 @@ class UserController {
             };
             const newUser = new User(dbObj);
             await newUser.save();
+            const email = new EmailController();
+            let body = `
+            <p>Hey</p>
+            <p>There was a <b>new user signup</b> at Padhvaiya with email ${req.body.email} and name ${req.body.firstName} ${req.body.lastName}</p>
+            <p>Thanks</p>
+            <p><p/>
+            `;
+            await email.sendMail(['troy0870@gmail.com', 'padhvaiya15@gmail.com'], 'Padhvaiya Alert: New User Signup', body);
             return res.status(httpCodes.OK).send({
                 success: true
             });
