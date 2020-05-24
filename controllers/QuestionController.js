@@ -4,9 +4,11 @@ const { Answer } = require('./../models/answer');
 const { Notification } = require('./../models/notification');
 const httpCodes = require('http-status');
 const { CloudController } = require('./CloudController');
+const { EmailController } = require('./EmailController');
 const { CONSTANTS } = require('./../constants');
 
 const cloudController = new CloudController();
+const email = new EmailController();
 
 class QuestionController {
     constructor() { }
@@ -14,6 +16,8 @@ class QuestionController {
     async create(req, res) {
         try {
             let desc = '';
+            let userObj = null;
+            let questObj = null;
             if (req.body.hasOwnProperty('desc')) {
                 desc = req.body.desc;
             }
@@ -21,6 +25,8 @@ class QuestionController {
             if (req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
             const newQuestion = new Question(dbObj);
             const dbResp = await newQuestion.save();
+            questObj = await Question.findById({ _id: dbResp._id });
+
             if (!!req.files) {
                 const fileNameExt = req.files.file.name.split('.')[1];
                 const storageName = dbResp._id.toString().concat('.').concat(fileNameExt);
@@ -28,12 +34,11 @@ class QuestionController {
                 const bufferData = req.files.file.data;
                 await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
                 const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
-                const questObj = await Question.findById({ _id: dbResp._id });
                 questObj['imgRef'] = dbStorageRef;
                 await questObj.save();
             }
             if (req.body.hasOwnProperty('userId')) {
-                const userObj = await User.findById({ _id: req.body.userId });
+                userObj = await User.findById({ _id: req.body.userId });
                 if (!userObj) throw new Error('User not found');
                 userObj.questions.push(dbResp._id);
                 await userObj.save();
@@ -44,6 +49,20 @@ class QuestionController {
                 entityType: 'question',
                 entityId: dbResp._id,
                 operation: 'asked'
+            });
+
+            users.forEach(user => {
+                
+                let msg = `
+                <p>Hey ${user.first_name}!,</p>
+    
+                <p>${userObj.first_name} ${userObj.last_name} asked a question recently. Do you think you can answer that?. Check it <a href="http://padhvaiya.com/question/${questObj._id}">here</a>!
+
+                <p>Regards,</p>
+                <p>The Padhvaiya Team</p>`;
+
+                if (!req.body.desc) email.sendMail(user.email, 'A new question was posted!')
+                else email.sendMail(user.email, 'A new question was posted!', msg);
             });
 
             return res.status(httpCodes.OK).send({
