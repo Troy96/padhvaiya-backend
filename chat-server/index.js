@@ -35,6 +35,7 @@ module.exports = function (io) {
                 case 'group': {
                     messageHistory = await Message.find({ roomId: joinParams.roomId })
                         .populate('from', 'profileImg')
+                        .sort({_id: -1});
                     client.join(joinParams.roomId);
                     io.to(joinParams.roomId).emit('getChatHistory', messageHistory);
                     break;
@@ -48,6 +49,7 @@ module.exports = function (io) {
                         client.join(joinParams.roomId);
                         messageHistory = await Message.find({ roomId: joinParams.roomId })
                             .populate('from', 'profileImg')
+                            .sort({_id: -1});
                         io.to(joinParams.roomId).emit('getChatHistory', messageHistory);
                     }
                     else if (!!reverseRoomIdInList) {
@@ -55,6 +57,7 @@ module.exports = function (io) {
                         client.join(reverseRoomId);
                         messageHistory = await Message.find({ roomId: reverseRoomId })
                             .populate('from', 'profileImg')
+                            .sort({_id: -1});
                         io.to(reverseRoomId).emit('getChatHistory', messageHistory);
 
                     }
@@ -63,6 +66,7 @@ module.exports = function (io) {
                         client.join(joinParams.roomId);
                         messageHistory = await Message.find({ roomId: joinParams.roomId })
                             .populate('from', 'profileImg')
+                            .sort({_id: -1});
                         io.to(joinParams.roomId).emit('getChatHistory', messageHistory);
                     }
                     break;
