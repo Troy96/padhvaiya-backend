@@ -20,7 +20,6 @@ class NotificationController {
 
             notificationList.forEach(
                 notif => {
-                    console.log(new Date(notif.createdAt).getTime(), new Date(userObj.lastNotificationsCheckedAt).getTime());
                     if (new Date(notif.createdAt).getTime() > new Date(userObj.lastNotificationsCheckedAt).getTime()) uncheckedNotifCount++;
                 }
             )
