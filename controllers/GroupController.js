@@ -288,12 +288,12 @@ class GroupController {
             if (!groupObj) throw new Error('Group not found!');
             if (!req.files) throw new Error('File not found!');
 
-            console.log(req.files)
+            console.log(req.files.files)
 
-            const fileNameExt = req.files.name.split('.')[1];
+            const fileNameExt = req.files.files.name.split('.')[1];
             const storageName = `_${groupId}`.concat('.').concat(fileNameExt);
             const cloudStoreKey = 'groups/logo/' + storageName;
-            const bufferData = req.files.data;
+            const bufferData = req.files.files.data;
             await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
 
             const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
