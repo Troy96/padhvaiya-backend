@@ -172,6 +172,20 @@ class PostController {
         }
     }
 
+    async deleteByGroup(req, res) {
+        try {
+            const groupId = req.params.id;
+            await Post.deleteMany({ group: groupId });
+            return res.status(httpCodes.OK).send({
+                success: true
+            })
+        } catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            });
+        }
+    }
+
     async actOnPost(req, res) {
         try {
             if (!req.body.hasOwnProperty('action')) throw new Error('Action not found!');
