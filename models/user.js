@@ -16,6 +16,7 @@ const UserSchema = new mongoose.Schema({
     coverImg: { type: String, default: 'http://via.placeholder.com/1600x400' },
     idCardImg: { type: String, default: null },
     lastSeen: { type: String, default: null },
+    lastNotificationsCheckedAt: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now() },
     updatedAt: { type: Date, default: Date.now() }
 })

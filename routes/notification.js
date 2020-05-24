@@ -3,6 +3,6 @@ const { NotificationController } = require('../controllers/NotificationControlle
 
 const notif = new NotificationController;
 
-router.get('/', notif.getAll);
+router.get('/:userId', notif.getAll);
 
 module.exports = router;
