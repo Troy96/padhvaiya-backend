@@ -51,8 +51,10 @@ class QuestionController {
                 operation: 'asked'
             });
 
+            const users = await User.find({});
+
             users.forEach(user => {
-                
+
                 let msg = `
                 <p>Hey ${user.first_name}!,</p>
     
@@ -61,8 +63,7 @@ class QuestionController {
                 <p>Regards,</p>
                 <p>The Padhvaiya Team</p>`;
 
-                if (!req.body.desc) email.sendMail(user.email, 'A new question was posted!')
-                else email.sendMail(user.email, 'A new question was posted!', msg);
+                email.sendMail(user.email, 'A new question was posted!', msg)
             });
 
             return res.status(httpCodes.OK).send({

@@ -5,8 +5,10 @@ const httpCodes = require('http-status');
 const { CloudController } = require('./CloudController');
 const { UserLikeModel } = require('../models/user-like');
 const { Notification } = require('./../models/notification');
+const { EmailController } = require('./../controllers/EmailController');
 const { CONSTANTS } = require('./../constants');
 const cloudController = new CloudController();
+const email = new EmailController();
 
 class AnswerController {
     constructor() { }
@@ -15,6 +17,8 @@ class AnswerController {
         try {
             if (!req.body.hasOwnProperty('questionId')) throw new Error('questionId property not found!');
             let dbObj = {};
+            let userObj = {};
+            let questionObj = {};
             if (req.body.desc) dbObj['desc'] = req.body.desc;
             dbObj['questionId'] = req.body.questionId;
             if (req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
@@ -33,12 +37,12 @@ class AnswerController {
                 await dbObj.save();
             }
             if (req.body.hasOwnProperty('userId')) {
-                const userObj = await User.findById({ _id: req.body.userId });
+                userObj = await User.findById({ _id: req.body.userId });
                 if (!userObj) throw new Error('User not found');
                 userObj.answers.push(dbResp._id);
                 await userObj.save();
             }
-            const questionObj = await Question.findById({ _id: req.body.questionId });
+            questionObj = await Question.findById({ _id: req.body.questionId });
             if (!questionObj) throw new Error('Question not found');
             questionObj.answers.push(dbResp._id);
             await questionObj.save();
@@ -48,6 +52,21 @@ class AnswerController {
                 entityType: 'question',
                 entityId: questionObj._id,
                 operation: 'answered'
+            });
+
+            const users = await User.find({});
+
+            users.forEach(user => {
+
+                let msg = `
+                <p>Hey ${user.first_name}!,</p>
+    
+                <p>${userObj.first_name} ${userObj.last_name} answered a question recently. Do you want to add more?. Check it <a href="http://padhvaiya.com/question/${questionObj._id}">here</a>!
+
+                <p>Regards,</p>
+                <p>The Padhvaiya Team</p>`;
+
+                email.sendMail(user.email, 'A new answer was posted!', msg)
             });
 
             return res.status(httpCodes.OK).send({
