@@ -45,8 +45,8 @@ class AnswerController {
 
             await Notification.create({
                 actor: req.body.userId,
-                entityType: 'answer',
-                entityId: dbResp._id,
+                entityType: 'question',
+                entityId: questionObj._id,
                 operation: 'answered'
             });
 
