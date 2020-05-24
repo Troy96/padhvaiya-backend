@@ -279,6 +279,35 @@ class GroupController {
             })
         }
     }
+
+    async changeGroupProfile(req, res) { //Delete old profile
+        try {
+            const groupId = req.params.id;
+            const groupObj = await Group.findById({ _id: groupId });
+
+            if (!groupObj) throw new Error('Group not found!');
+            if (!req.files) throw new Error('File not found!');
+
+            const fileNameExt = req.files.file.name.split('.')[1];
+            const storageName = req.body.imageType.concat(`_${groupId}`).concat('.').concat(fileNameExt);
+            const cloudStoreKey = 'groups/logo/' + storageName;
+            const bufferData = req.files.file.data;
+            await cloudController.uploadObject({ Bucket: process.env.BUCKET_NAME, Key: cloudStoreKey, Body: bufferData });
+
+            const dbStorageRef = CONSTANTS.BASE_S3_REF + cloudStoreKey;
+            groupObj['logoRef'] = dbStorageRef;
+            await groupObj.save();
+ 
+            return res.status(httpCodes.OK).send({
+                success: true
+            })
+        }
+        catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            })
+        }
+    }
 }
 
 module.exports = { GroupController }
