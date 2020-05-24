@@ -37,6 +37,13 @@ GroupSchema.methods.addNewFollower = async function (userId) {
     return await group.save();
 }
 
+GroupSchema.methods.removeMember = async function (userId) {
+    let group = this;
+    group['members'] = group['members'].filter(member => member != userId);
+    group['followers'] = group['followers'].filter(follower => follower != userId);
+    return await group.save();
+}
+
 GroupSchema.methods.isUserEligible = function (userId) {
     let group = this;
     if (!(group['admins'].includes(userId) || group['members'].includes(userId)))

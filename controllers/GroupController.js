@@ -1,7 +1,7 @@
 const { Group } = require('./../models/group');
 const { User } = require('./../models/user');
 const { College } = require('./../models/college');
-const { GroupActivity} = require('../models/groupActivity');
+const { GroupActivity } = require('../models/groupActivity');
 const httpCodes = require('http-status');
 const { CloudController } = require('./CloudController');
 const { CONSTANTS } = require('../constants');
@@ -78,6 +78,10 @@ class GroupController {
                 })
                 .populate({
                     path: 'members',
+                    model: 'User'
+                })
+                .populate({
+                    path: 'followers',
                     model: 'User'
                 })
             return res.status(httpCodes.OK).send(groupList)
@@ -239,7 +243,7 @@ class GroupController {
                     });
                     groupObj.addNewMember(userId);
                     break;
-                }   
+                }
                 case 'allow following': {
                     groupObj.addNewFollower(userId);
                     break;
@@ -254,6 +258,25 @@ class GroupController {
                 .send({
                     error: e.message
                 })
+        }
+    }
+
+    async removeGroupMember(req, res) {
+        try {
+            const groupId = req.params.id;
+            const userId = req.params.userId;
+
+            const groupObj = await Group.findById({ _id: groupId });
+            await groupObj.removeMember(userId);
+
+            return res.status(httpCodes.OK).send({
+                success: true
+            })
+        }
+        catch (e) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: e.message
+            })
         }
     }
 }
