@@ -60,11 +60,13 @@ class AnswerController {
 
                 let msg = `
                 <p>Hey ${user.first_name}!,</p>
-    
+                <br/>
+                <br/>
                 <p>${userObj.first_name} ${userObj.last_name} answered a question recently. Do you want to add more?. Check it <a href="http://padhvaiya.com/question/${questionObj._id}">here</a>!
-
+                <br/>
+                <br/>
                 <p>Regards,</p>
-                <p>The Padhvaiya Team</p>`;
+                The Padhvaiya Team`;
 
                 email.sendMail(user.email, 'A new answer was posted!', msg)
             });

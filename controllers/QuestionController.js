@@ -57,11 +57,13 @@ class QuestionController {
 
                 let msg = `
                 <p>Hey ${user.first_name}!,</p>
-    
+                <br/>
+                <br/>
                 <p>${userObj.first_name} ${userObj.last_name} asked a question recently. Do you think you can answer that?. Check it <a href="http://padhvaiya.com/question/${questObj._id}">here</a>!
-
+                <br/>
+                <br/>
                 <p>Regards,</p>
-                <p>The Padhvaiya Team</p>`;
+                The Padhvaiya Team`;
 
                 email.sendMail(user.email, 'A new question was posted!', msg)
             });
