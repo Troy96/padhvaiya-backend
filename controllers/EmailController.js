@@ -7,6 +7,7 @@ class EmailController {
         this.transporter = nodeMailer.createTransport({
             /* host: CONSTANTS.EMAIL_CONFIG.HOST,
             secureConnection: false, */
+            pool: true,
             service: CONSTANTS.EMAIL_CONFIG.SERVICE,
             auth: {
                 user: CONSTANTS.EMAIL_CONFIG.USER_EMAIL,
