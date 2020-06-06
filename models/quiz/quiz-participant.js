@@ -11,8 +11,8 @@ const QuizParticipantSchema = new mongoose.Schema({
     isQualified: { type: Boolean, default: true }
 });
 
-const QuizParticipantModel = mongoose.model('QuizParticipant', QuizParticipantSchema, 'QuizParticipant');
+const QuizParticipant = mongoose.model('QuizParticipant', QuizParticipantSchema, 'QuizParticipant');
 
 module.exports = {
-    QuizParticipantModel
+    QuizParticipant
 }

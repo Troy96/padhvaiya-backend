@@ -10,8 +10,8 @@ const QuizSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now() }
 });
 
-const QuizModal = mongoose.model('Quiz', QuizSchema, 'Quiz');
+const Quiz = mongoose.model('Quiz', QuizSchema, 'Quiz');
 
 module.exports = {
-    QuizModal
+    Quiz
 }
