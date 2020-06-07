@@ -16,16 +16,33 @@ class QuestionController {
     async create(req, res) {
         try {
             let desc = '';
+            let options = [];
             let userObj = null;
             let questObj = null;
-            if (req.body.hasOwnProperty('desc')) {
+            let dbObj = {};
+
+            if (!req.body.hasOwnProperty('type')) throw new Error('Type not found');
+
+            dbObj['type'] = req.body.type;
+
+            if (req.body.type == 'description') {
+                if (req.body.hasOwnProperty('options')) throw new Error('Question type is description. Cannot have options!');
                 desc = req.body.desc;
+                dbObj['desc'] = desc;
             }
-            let dbObj = { desc: desc };
+
+            if (req.body.type == 'choice') {
+                options = req.body.options;
+                dbObj['options'] = [...options];
+            }
             if (req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
+
             const newQuestion = new Question(dbObj);
             const dbResp = await newQuestion.save();
+
             questObj = await Question.findById({ _id: dbResp._id });
+
+            console.log(questObj)
 
             if (!!req.files) {
                 const fileNameExt = req.files.file.name.split('.')[1];
@@ -53,20 +70,20 @@ class QuestionController {
 
             const users = await User.find({});
 
-            users.forEach(user => {
+            // users.forEach(user => {
 
-                let msg = `
-                <p>Hey ${user.first_name}!,</p>
-                <br/>
-                <br/>
-                <p>${userObj.first_name} ${userObj.last_name} asked a question recently. Do you think you can answer that?. Check it <a href="http://padhvaiya.com/question/${questObj._id}">here</a>!
-                <br/>
-                <br/>
-                <p>Regards,</p>
-                The Padhvaiya Team`;
+            //     let msg = `
+            //     <p>Hey ${user.first_name}!,</p>
+            //     <br/>
+            //     <br/>
+            //     <p>${userObj.first_name} ${userObj.last_name} asked a question recently. Do you think you can answer that?. Check it <a href="http://padhvaiya.com/question/${questObj._id}">here</a>!
+            //     <br/>
+            //     <br/>
+            //     <p>Regards,</p>
+            //     The Padhvaiya Team`;
 
-                email.sendMail(user.email, 'A new question was posted!', msg)
-            });
+            //     email.sendMail(user.email, 'A new question was posted!', msg)
+            // });
 
             return res.status(httpCodes.OK).send({
                 success: true,
