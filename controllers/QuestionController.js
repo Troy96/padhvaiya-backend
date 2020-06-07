@@ -27,7 +27,6 @@ class QuestionController {
 
             if (req.body.type == 'description') {
                 if (req.body.hasOwnProperty('options')) throw new Error('Question type is description. Cannot have options!');
-                dbObj['desc'] = desc;
             }
 
             if (req.body.type == 'choice') {
