@@ -27,7 +27,6 @@ class QuestionController {
 
             if (req.body.type == 'description') {
                 if (req.body.hasOwnProperty('options')) throw new Error('Question type is description. Cannot have options!');
-                desc = req.body.desc;
                 dbObj['desc'] = desc;
             }
 
@@ -37,12 +36,13 @@ class QuestionController {
             }
             if (req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
 
+            if (req.body.hasOwnProperty('desc')) dbObj['desc'] = req.body.desc;
+
             const newQuestion = new Question(dbObj);
             const dbResp = await newQuestion.save();
 
             questObj = await Question.findById({ _id: dbResp._id });
 
-            console.log(questObj)
 
             if (!!req.files) {
                 const fileNameExt = req.files.file.name.split('.')[1];
