@@ -15,12 +15,11 @@ class QuizController {
             if (!req.body.hasOwnProperty('timestamp')) throw new Error('timestamp not found');
 
             await Quiz.create({
-                quizId,
                 ...req.body
             });
 
             return res.status(httpCodes.OK).send({
-                status: sucesss
+                success: true
             });
 
         } catch (err) {
@@ -124,7 +123,7 @@ class QuizController {
     }
 
     async disqualifyParticipant() {
-        
+
     }
 
     async getParticipants() {

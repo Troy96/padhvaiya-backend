@@ -30,6 +30,7 @@ class QuestionController {
             }
 
             if (req.body.type == 'choice') {
+                if(!req.body.hasOwnProperty('options')) throw new Error('Options not found');
                 options = req.body.options;
                 dbObj['options'] = [...options];
             }

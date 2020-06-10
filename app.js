@@ -25,6 +25,7 @@ const groupActivityRouter = require('./routes/groupActivity');
 const chatRouter = require('./routes/chats');
 const contactUsRouter = require('./routes/contactus');
 const notifRouter = require('./routes/notification');
+const quizRouter = require('./routes/quiz');
 
 const app = express();
 
@@ -57,6 +58,7 @@ app.use('/activity', groupActivityRouter);
 app.use('/chats', chatRouter);
 app.use('/contactus', contactUsRouter);
 app.use('/notifications', notifRouter);
+app.use('/quiz', quizRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
