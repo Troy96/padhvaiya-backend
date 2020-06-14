@@ -35,11 +35,41 @@ class QuizController {
     }
 
     async getById(req, res) {
+        try {
+            const quizId = req.params.quizId;
+            const quizObj = await Quiz.findById({ _id: quizId });
 
+            if (!quizObj) throw new Error('Quiz not found');
+
+            return res.status(httpCodes.OK).send({
+                data: quizObj,
+                success: true
+            })
+        }
+
+        catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message,
+                status: false
+            })
+        }
     }
 
     async getAll(req, res) {
+        try {
+            const quizes = await Quiz.find({});
+            return res.status(httpCodes.OK).send({
+                data: quizes,
+                success: true
+            })
+        }
 
+        catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message,
+                success: false
+            })
+        }
     }
 
     async deleteAll(req, res) {
