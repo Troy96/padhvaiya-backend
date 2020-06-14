@@ -228,6 +228,36 @@ class QuizController {
         }
     }
 
+    async makeQuizClose(req, res) {
+        try {
+            const quizId = req.params.quizId;
+
+            const quizObj = await Quiz.findById({ _id: quizId });
+
+            if (!quizObj) throw new Error('Quiz not found');
+
+            if (!quizObj['isOpenForRegistration']) {
+                return res.status(httpCodes.OK).send({
+                    data: 'Quiz is already closed',
+                    success: true
+                });
+            }
+
+            quizObj['isOpenForRegistration'] = false;
+            await quizObj.save();
+
+            return res.status(httpCodes.OK).send({
+                data: 'Quiz is now closed for registration',
+                success: true
+            });
+
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                status: err.message
+            })
+        }
+    }
+
     async registerParticipant(req, res) {
         try {
             const quizId = req.params.quizId;
