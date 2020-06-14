@@ -2,6 +2,8 @@ const httpCodes = require('http-status');
 
 const { Quiz } = require('../models/quiz/quiz');
 const { QuizParticipant } = require('../models/quiz/quiz-participant');
+const { QuizQuestion } = require('../models/quiz/quiz-question');
+const { QuizRule } = require('../models/quiz/quiz-rule');
 
 
 class QuizController {
@@ -74,6 +76,94 @@ class QuizController {
 
     async deleteAll(req, res) {
 
+    }
+
+    async createQuizQuestion(req, res) {
+        try {
+
+            const quizId = req.params.quizId;
+            if (!req.body.hasOwnProperty('desc')) throw new Error('desc not found');
+            if (!req.body.hasOwnProperty('options')) throw new Error('options not found');
+            if (!req.body.options.length) throw new Error('No options found');
+            if (!req.body.hasOwnProperty('ans')) throw new Error('ans not found');
+
+            const reqObj = {
+                desc: req.body.desc,
+                options: req.body.options,
+                ans: req.body.ans,
+                quizId
+            }
+
+            await Quiz.create(reqObj);
+
+            return res.status(httpCodes.OK).send({
+                success: true
+            })
+
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
+            })
+        }
+    }
+
+    async createQuizRules() {
+        try {
+            const quizId = req.params.quizId;
+
+            if (!req.body.hasOwnProperty('desc')) throw new Error('rules not found');
+            if (!req.body.rules.desc) throw new Error('No rule found');
+
+            const reqObj = {
+                quizId,
+                desc
+            }
+
+            await QuizRule.create(reqObj);
+
+            return res.status(httpCodes.OK).send({
+                success: true
+            });
+
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
+            })
+        }
+    }
+
+    async getQuizQuestions(req, res) {
+        try {
+            const quizId = req.params.quizId;
+            const questions = await QuizQuestion.find({ quizId: quizId });
+
+            return res.status(httpCodes.OK).send({
+                data: questions,
+                success: true
+            });
+
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
+            })
+        }
+    }
+
+    async getQuizQuestionById(req, res) {
+        try {
+            const questionId = req.params.questionId;
+
+            const quesObj = await QuizQuestion.findById({ _id: questionId });
+
+            return res.status(httpCodes.OK).send({
+                data: quesObj,
+                success: true
+            })
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
+            })
+        }
     }
 
     async checkIfQuizIsOpen(req, res) {
