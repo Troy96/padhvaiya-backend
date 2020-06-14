@@ -94,7 +94,7 @@ class QuizController {
                 quizId
             }
 
-            await Quiz.create(reqObj);
+            await QuizQuestion.create(reqObj);
 
             return res.status(httpCodes.OK).send({
                 success: true
@@ -107,16 +107,16 @@ class QuizController {
         }
     }
 
-    async createQuizRules() {
+    async createQuizRules(req, res) {
         try {
             const quizId = req.params.quizId;
 
             if (!req.body.hasOwnProperty('desc')) throw new Error('rules not found');
-            if (!req.body.rules.desc) throw new Error('No rule found');
+            if (!req.body.desc) throw new Error('No rule found');
 
             const reqObj = {
                 quizId,
-                desc
+                desc: req.body.desc
             }
 
             await QuizRule.create(reqObj);
@@ -124,6 +124,22 @@ class QuizController {
             return res.status(httpCodes.OK).send({
                 success: true
             });
+
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
+            })
+        }
+    }
+
+    async getQuizRules(req, res) {
+        try {
+            const quizId = req.params.quizId;
+            const rules = await QuizRule.find({ quizId: quizId }).populate('quizId');
+            return res.status(httpCodes.OK).send({
+                data: rules,
+                success: true
+            })
 
         } catch (err) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
