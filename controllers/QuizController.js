@@ -4,6 +4,7 @@ const { Quiz } = require('../models/quiz/quiz');
 const { QuizParticipant } = require('../models/quiz/quiz-participant');
 const { QuizQuestion } = require('../models/quiz/quiz-question');
 const { QuizRule } = require('../models/quiz/quiz-rule');
+const { QuizAnswer } = require('../models/quiz/quiz-answer');
 
 
 class QuizController {
@@ -273,7 +274,8 @@ class QuizController {
 
 
             await QuizParticipant.create({
-                ...req.body
+                ...req.body,
+                quizId
             });
 
             return res.status(httpCodes.OK).send({
@@ -294,6 +296,41 @@ class QuizController {
 
     async getParticipants() {
 
+    }
+
+    async selectAnswer(req, res) {
+        try {
+            const quizId = req.params.quizId;
+            const participantId = req.params.participantId;
+            const questionId = req.params.questionId;
+
+            if (!req.body.hasOwnProperty('answer')) throw new Error('answer not found');
+
+            const alreadyAnswered = await QuizAnswer.findOne({quizId: quizId, participantId: participantId, questionId: questionId});
+
+            if(!!alreadyAnswered) throw new Error('Already answered the question!');
+
+            const reqObj = {
+                quizId,
+                participantId,
+                questionId,
+                answerGiven: req.body.answer
+            }
+
+            await QuizAnswer.create(reqObj);
+
+            return res.status(httpCodes.OK).send({
+                status: true
+            });
+
+
+        }
+
+        catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                status: err.message
+            })
+        }
     }
 
 }
