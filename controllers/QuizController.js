@@ -268,6 +268,7 @@ class QuizController {
             if (!quizObj['isOpenForRegistration']) throw new Error('Quiz is not open for registration');
 
             if (!req.body.hasOwnProperty('name')) throw new Error('name not found');
+            if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
             if (!req.body.hasOwnProperty('email')) throw new Error('email not found');
             if (!req.body.hasOwnProperty('age')) throw new Error('age not found');
             if (!req.body.hasOwnProperty('phone')) throw new Error('phone not found');
@@ -306,9 +307,9 @@ class QuizController {
 
             if (!req.body.hasOwnProperty('answer')) throw new Error('answer not found');
 
-            const alreadyAnswered = await QuizAnswer.findOne({quizId: quizId, participantId: participantId, questionId: questionId});
+            const alreadyAnswered = await QuizAnswer.findOne({ quizId: quizId, participantId: participantId, questionId: questionId });
 
-            if(!!alreadyAnswered) throw new Error('Already answered the question!');
+            if (!!alreadyAnswered) throw new Error('Already answered the question!');
 
             const reqObj = {
                 quizId,
@@ -329,6 +330,27 @@ class QuizController {
         catch (err) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
                 status: err.message
+            })
+        }
+    }
+
+    async getParticipantIdByQuiz() {
+        try {
+            const quizId = req.params.quizId;
+            const userId = req.params.userId;
+
+            const participantObj = await QuizParticipant.findOne({ quizId: quizId, userId: userId });
+
+            if (!participantObj) throw new Error('No participant found!');
+
+            return res.status(httpCodes.OK).send({
+                data: participantObj,
+                success: true
+            })
+
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
             })
         }
     }

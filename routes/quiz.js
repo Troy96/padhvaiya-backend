@@ -14,5 +14,6 @@ router.get('/:quizId/rules', quiz.getQuizRules);
 router.get('/:quizId/openForRegistration', quiz.makeQuizOpen);
 router.get('/:quizId/closeForRegistration', quiz.makeQuizClose);
 router.post('/:quizId/participants/:participantId/questions/:questionId', quiz.selectAnswer);
+router.get('/:quizId/users/:userId/', quiz.getParticipantIdByQuiz);
 
 module.exports = router;
