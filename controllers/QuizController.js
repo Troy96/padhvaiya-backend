@@ -400,7 +400,50 @@ class QuizController {
         }
     }
 
-    
+    async createLeaderBoardForQuiz() {
+        try {
+            const quizId = req.params.quizId;
+            let participantCorrectAnsMap = {};
+            let rankedParticipantObjs = [];
+
+            const quizParticipants = await QuizParticipant.find({ quizId: quizId });
+
+            (async function next(i) {
+                if (i == quizParticipants.length) {
+                    const rankedListOfParticipants = Object.keys(participantCorrectAnsMap).sort((a, b) => participantCorrectAnsMap[b] - participantCorrectAnsMap[a]);
+                    rankedListOfParticipants.forEach(paticipantId => {
+                        const participantObj = quizParticipants.find(obj => obj._id == paticipantId);
+                        rankedParticipantObjs.push(participantObj);
+                    });
+
+                    return res.status(httpCodes.OK).send({
+                        data: rankedParticipantObjs,
+                        success: true
+                    });
+
+                }
+                let countOfCorrectAns = 0;
+
+                const participantObj = quizParticipants[i];
+                const quizAnswers = await QuizAnswer.find({ quizId: quizId, participantId: participantObj._id });
+
+                quizAnswers.forEach(answer => {
+                    if (answer.isCorrect) countOfCorrectAns++;
+                });
+
+                participantCorrectAnsMap[participantObj._id] = countOfCorrectAns;
+
+            })(0);
+
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
+            })
+
+        }
+    }
+
+
 
 }
 
