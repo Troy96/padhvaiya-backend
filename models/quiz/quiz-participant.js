@@ -8,8 +8,9 @@ const QuizParticipantSchema = new mongoose.Schema({
     email: { type: String, unique: true, validate: { validator: validator.isEmail, message: 'Not a valid Email' } },
     phone: { type: Number, default: null, unique: true },
     age: { type: Number, default: null },
+    attemptedQuestions: { type: Number, default: 0 },
     isRegistered: { type: Boolean, default: true },
-    isQualified: { type: Boolean, default: true }
+    isQualified: { type: Boolean, default: true },
 });
 
 const QuizParticipant = mongoose.model('QuizParticipant', QuizParticipantSchema, 'QuizParticipant');

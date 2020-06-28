@@ -306,17 +306,27 @@ class QuizController {
             const questionId = req.params.questionId;
 
             if (!req.body.hasOwnProperty('answer')) throw new Error('answer not found');
+            const answerGiven = req.body.answer;
 
             const alreadyAnswered = await QuizAnswer.findOne({ quizId: quizId, participantId: participantId, questionId: questionId });
 
             if (!!alreadyAnswered) throw new Error('Already answered the question!');
 
-            const reqObj = {
+            let reqObj = {
                 quizId,
                 participantId,
                 questionId,
-                answerGiven: req.body.answer
+                answerGiven
             }
+
+            const quizQuestion = await QuizQuestion.findById({_id: questionId});
+            if(!quizQuestion) throw new Error('Quiz question not found');
+            answerGiven === quizQuestion.ans ?  reqObj.isCorrect = true : reqObj.isCorrect = false;
+
+            const participantObj = await QuizParticipant.findById({_id: participantId});
+            if(!participantObj) throw new Error('Participant not found');
+            participantObj['attemptedQuestions']++;
+            await participantObj.save();
 
             await QuizAnswer.create(reqObj);
 
