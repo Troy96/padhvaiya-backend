@@ -7,7 +7,8 @@ const QuizSchema = new mongoose.Schema({
     isOpenForRegistration: { type: Boolean, default: false },
     timestamp: { type: Number, default: null },
     createdAt: { type: Date, default: Date.now() },
-    updatedAt: { type: Date, default: Date.now() }
+    updatedAt: { type: Date, default: Date.now() },
+    totalQuestions: { type: Number, default: 0 }
 });
 
 const Quiz = mongoose.model('Quiz', QuizSchema, 'Quiz');

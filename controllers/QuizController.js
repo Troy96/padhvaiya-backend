@@ -97,6 +97,10 @@ class QuizController {
 
             await QuizQuestion.create(reqObj);
 
+            const quizObj = await Quiz.findById({ _id: quizId });
+            quizObj.totalQuestions++;
+            await quizObj.save();
+
             return res.status(httpCodes.OK).send({
                 success: true
             })
