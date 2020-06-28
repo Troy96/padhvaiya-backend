@@ -319,12 +319,12 @@ class QuizController {
                 answerGiven
             }
 
-            const quizQuestion = await QuizQuestion.findById({_id: questionId});
-            if(!quizQuestion) throw new Error('Quiz question not found');
-            answerGiven === quizQuestion.ans ?  reqObj.isCorrect = true : reqObj.isCorrect = false;
+            const quizQuestion = await QuizQuestion.findById({ _id: questionId });
+            if (!quizQuestion) throw new Error('Quiz question not found');
+            answerGiven === quizQuestion.ans ? reqObj.isCorrect = true : reqObj.isCorrect = false;
 
-            const participantObj = await QuizParticipant.findById({_id: participantId});
-            if(!participantObj) throw new Error('Participant not found');
+            const participantObj = await QuizParticipant.findById({ _id: participantId });
+            if (!participantObj) throw new Error('Participant not found');
             participantObj['attemptedQuestions']++;
             await participantObj.save();
 
@@ -364,6 +364,43 @@ class QuizController {
             })
         }
     }
+
+    async resultOfParticipantByQuiz() {
+        try {
+            const quizId = req.params.quizId;
+            const participantId = req.params.participantId;
+            let countOfCorrectAns = 0;
+            let countOfIncorrectAns = 0;
+
+            const quizAnswers = await QuizAnswer.find({ quizId: quizId, participantId: participantId });
+            const totalQuestionsForQuiz = await QuizQuestion.countDocuments({ quizId: quizId });
+
+            if (quizAnswers.length) {
+                quizAnswers.forEach(obj => {
+                    obj.isCorrect ? countOfCorrectAns++ : countOfIncorrectAns++;
+                });
+            }
+
+            const respObj = {
+                questionsAttempted: countOfIncorrectAns + countOfCorrectAns,
+                countOfCorrectAns,
+                countOfIncorrectAns,
+                totalQuestionsForQuiz
+            }
+
+            return res.status(httpCodes.OK).send({
+                data: respObj,
+                status: true
+            })
+
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
+            })
+        }
+    }
+
+    
 
 }
 
