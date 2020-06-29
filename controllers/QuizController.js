@@ -273,9 +273,12 @@ class QuizController {
 
             if (!req.body.hasOwnProperty('name')) throw new Error('name not found');
             if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
+            if (!userId) throw new Error('userid is null');
+
             if (!req.body.hasOwnProperty('email')) throw new Error('email not found');
             if (!req.body.hasOwnProperty('age')) throw new Error('age not found');
             if (!req.body.hasOwnProperty('phone')) throw new Error('phone not found');
+
 
 
             await QuizParticipant.create({
