@@ -273,7 +273,7 @@ class QuizController {
 
             if (!req.body.hasOwnProperty('name')) throw new Error('name not found');
             if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
-            if (!userId) throw new Error('userid is null');
+            if (!req.body.userId) throw new Error('userid is null');
 
             if (!req.body.hasOwnProperty('email')) throw new Error('email not found');
             if (!req.body.hasOwnProperty('age')) throw new Error('age not found');
@@ -293,7 +293,7 @@ class QuizController {
 
         } catch (err) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
-                status: err.message
+                error: err.message
             })
         }
     }
