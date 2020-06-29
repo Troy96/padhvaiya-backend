@@ -346,7 +346,7 @@ class QuizController {
 
         catch (err) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
-                status: err.message
+                error: err.message
             })
         }
     }
