@@ -298,11 +298,11 @@ class QuizController {
         }
     }
 
-    async disqualifyParticipant() {
+    async disqualifyParticipant(req, res) {
 
     }
 
-    async getParticipants() {
+    async getParticipants(req, res) {
 
     }
 
@@ -351,7 +351,7 @@ class QuizController {
         }
     }
 
-    async getParticipantIdByQuiz() {
+    async getParticipantIdByQuiz(req, res) {
         try {
             const quizId = req.params.quizId;
             const userId = req.params.userId;
@@ -372,7 +372,7 @@ class QuizController {
         }
     }
 
-    async resultOfParticipantByQuiz() {
+    async resultOfParticipantByQuiz(req, res) {
         try {
             const quizId = req.params.quizId;
             const participantId = req.params.participantId;
@@ -407,7 +407,7 @@ class QuizController {
         }
     }
 
-    async createLeaderBoardForQuiz() {
+    async createLeaderBoardForQuiz(req, res) {
         try {
             const quizId = req.params.quizId;
             let participantCorrectAnsMap = {};
