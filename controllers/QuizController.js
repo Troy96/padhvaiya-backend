@@ -440,6 +440,8 @@ class QuizController {
 
                 participantCorrectAnsMap[participantObj._id] = countOfCorrectAns;
 
+                return await next(++i);
+
             })(0);
 
         } catch (err) {
