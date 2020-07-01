@@ -5,7 +5,7 @@ const QuizParticipantSchema = new mongoose.Schema({
     quizId: { type: mongoose.Types.ObjectId, ref: 'Quiz' },
     userId: { type: mongoose.Types.ObjectId, ref: 'User' },
     name: { type: String, default: null },
-    email: { type: String, unique: true, validate: { validator: validator.isEmail, message: 'Not a valid Email' } },
+    email: { type: String, validate: { validator: validator.isEmail, message: 'Not a valid Email' } },
     phone: { type: Number, default: null, unique: true },
     age: { type: Number, default: null },
     attemptedQuestions: { type: Number, default: 0 },
