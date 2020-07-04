@@ -11,11 +11,14 @@ router.get('/:quizId/questions', quiz.getQuizQuestions);
 router.post('/:quizId/questions', quiz.createQuizQuestion);
 router.post('/:quizId/rules', quiz.createQuizRules);
 router.get('/:quizId/rules', quiz.getQuizRules);
-router.get('/:quizId/openForRegistration', quiz.makeQuizOpen);
-router.get('/:quizId/closeForRegistration', quiz.makeQuizClose);
+router.get('/:quizId/openForRegistration', quiz.makeQuizOpenForRegistration);
+router.get('/:quizId/closeForRegistration', quiz.makeQuizCloseForRegistration);
 router.post('/:quizId/participants/:participantId/questions/:questionId', quiz.selectAnswer);
 router.get('/:quizId/users/:userId/', quiz.getParticipantIdByQuiz);
 router.get('/:quizId/participants/:participantId/result', quiz.resultOfParticipantByQuiz);
 router.get('/:quizId/leaderboard', quiz.createLeaderBoardForQuiz);
+router.get('/:quizId/open', quiz.makeQuizOpen);
+router.get('/:quizId/close', quiz.makeQuizOver);
+
 
 module.exports = router;

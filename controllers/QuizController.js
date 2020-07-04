@@ -16,6 +16,8 @@ class QuizController {
             if (!req.body.hasOwnProperty('desc')) throw new Error('desc not found');
             if (!req.body.hasOwnProperty('isOpenForRegistration')) throw new Error('isOpenForRegistration not found');
             if (!req.body.hasOwnProperty('timestamp')) throw new Error('timestamp not found');
+            if (!req.body.hasOwnProperty('duration')) throw new Error('duration not found');
+
 
             await Quiz.create({
                 ...req.body
@@ -83,15 +85,25 @@ class QuizController {
         try {
 
             const quizId = req.params.quizId;
-            if (!req.body.hasOwnProperty('desc')) throw new Error('desc not found');
-            if (!req.body.hasOwnProperty('options')) throw new Error('options not found');
-            if (!req.body.options.length) throw new Error('No options found');
+            if (!req.body.hasOwnProperty('engDesc')) throw new Error('engDesc not found');
+            if (!req.body.hasOwnProperty('hindiDesc')) throw new Error('hindiDesc not found');
+
+            if (!req.body.hasOwnProperty('engOptions')) throw new Error('engOptions not found');
+            if (!req.body.hasOwnProperty('hindiOptions')) throw new Error('hindiOptions not found');
+
+            if (!req.body.engOptions.length) throw new Error('No engOptions found');
+            if (!req.body.hindiOptions.length) throw new Error('No hindiOptions found');
+
             if (!req.body.hasOwnProperty('ans')) throw new Error('ans not found');
 
             const reqObj = {
                 desc: req.body.desc,
                 options: req.body.options,
                 ans: req.body.ans,
+                engDesc: req.body.engDesc,
+                hindiDesc: req.body.hindiDesc,
+                engOptions: req.body.engOptions,
+                hindiOptions: req.body.hindiOptions,
                 quizId
             }
 
@@ -203,7 +215,7 @@ class QuizController {
         }
     }
 
-    async makeQuizOpen(req, res) {
+    async makeQuizOpenForRegistration(req, res) {
         try {
             const quizId = req.params.quizId;
 
@@ -233,7 +245,7 @@ class QuizController {
         }
     }
 
-    async makeQuizClose(req, res) {
+    async makeQuizCloseForRegistration(req, res) {
         try {
             const quizId = req.params.quizId;
 
@@ -309,6 +321,11 @@ class QuizController {
     async selectAnswer(req, res) {
         try {
             const quizId = req.params.quizId;
+
+            const quizObj = await Quiz.findById({ _id: quizId });
+            if (!quizObj) throw new Error('Quiz not found');
+            if (!quizObj.isLive) throw new Error('Answer cannot be submited now. Quiz is not live.');
+
             const participantId = req.params.participantId;
             const questionId = req.params.questionId;
 
@@ -449,6 +466,49 @@ class QuizController {
                 error: err.message
             })
 
+        }
+    }
+
+    async makeQuizOver(req, res) {
+        try {
+            
+            const quizId = req.params.quizId;
+            const quizObj = await Quiz.findById({_id: quizId});
+            if(!quizObj) throw new Error('Quiz not found');
+
+            if(!quizObj.isLive) throw new Error('Quiz is already over');
+            quizObj.isLive = false;
+            await quizObj.save();
+
+            return res.status(httpCodes.OK).send({
+                status: true
+            })
+
+
+        } catch(err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
+            })
+        }
+    }
+
+    async makeQuizOpen(req, res) {
+        try {
+            const quizId = req.params.quizId;
+            const quizObj = await Quiz.findById({_id: quizId});
+            if(!quizObj) throw new Error('Quiz not found');
+
+            if(quizObj.isLive) throw new Error('Quiz is already open');
+            quizObj.isLive = true;
+            await quizObj.save();
+
+            return res.status(httpCodes.OK).send({
+                status: true
+            })
+        } catch(err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
+            })
         }
     }
 
