@@ -5,6 +5,7 @@ const { QuizParticipant } = require('../models/quiz/quiz-participant');
 const { QuizQuestion } = require('../models/quiz/quiz-question');
 const { QuizRule } = require('../models/quiz/quiz-rule');
 const { QuizAnswer } = require('../models/quiz/quiz-answer');
+const quiz = require('../models/quiz/quiz');
 
 
 class QuizController {
@@ -471,12 +472,12 @@ class QuizController {
 
     async makeQuizOver(req, res) {
         try {
-            
-            const quizId = req.params.quizId;
-            const quizObj = await Quiz.findById({_id: quizId});
-            if(!quizObj) throw new Error('Quiz not found');
 
-            if(!quizObj.isLive) throw new Error('Quiz is already over');
+            const quizId = req.params.quizId;
+            const quizObj = await Quiz.findById({ _id: quizId });
+            if (!quizObj) throw new Error('Quiz not found');
+
+            if (!quizObj.isLive) throw new Error('Quiz is already over');
             quizObj.isLive = false;
             await quizObj.save();
 
@@ -485,7 +486,7 @@ class QuizController {
             })
 
 
-        } catch(err) {
+        } catch (err) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
                 error: err.message
             })
@@ -495,17 +496,54 @@ class QuizController {
     async makeQuizOpen(req, res) {
         try {
             const quizId = req.params.quizId;
-            const quizObj = await Quiz.findById({_id: quizId});
-            if(!quizObj) throw new Error('Quiz not found');
+            const quizObj = await Quiz.findById({ _id: quizId });
+            if (!quizObj) throw new Error('Quiz not found');
 
-            if(quizObj.isLive) throw new Error('Quiz is already open');
+            if (quizObj.isLive) throw new Error('Quiz is already open');
             quizObj.isLive = true;
             await quizObj.save();
 
             return res.status(httpCodes.OK).send({
                 status: true
             })
-        } catch(err) {
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
+            })
+        }
+    }
+
+    async sendQuizLink() {
+        try {
+            const quizId = req.params.quizId;
+            const quizObj = await Quiz.findById({ _id: quizId });
+            if (!quizObj) throw new Error('Quiz not found');
+
+            const participants = await QuizParticipant.find({ quizId: quizId });
+
+            (async function next(i) {
+                if (i == participants.length) {
+                    return res.status(httpCodes.OK).send({
+                        status: true
+                    })
+                }
+
+                let msg = `
+                     <p>Hey ${participants[i].first_name}!,</p>
+                     <br/>
+                     <br/>
+                     <p><a href="http://padhvaiya.com/quiz/${quizId}/participants/${participants[i]._id}">here</a> to go to the weekend quiz page and start answering the questions.
+                     <br/>
+                     <br/>
+                     <p>Regards,</p>
+                     The Padhvaiya Team`;
+
+                email.sendMail(participants[i].email, 'Weekend Quiz Link', msg)
+
+                return await next(++i);
+            })(0);
+
+        } catch (err) {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
                 error: err.message
             })

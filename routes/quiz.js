@@ -19,6 +19,7 @@ router.get('/:quizId/participants/:participantId/result', quiz.resultOfParticipa
 router.get('/:quizId/leaderboard', quiz.createLeaderBoardForQuiz);
 router.get('/:quizId/open', quiz.makeQuizOpen);
 router.get('/:quizId/close', quiz.makeQuizOver);
+router.get('/:quizId/sendQuizLink', quiz.sendQuizLink);
 
 
 module.exports = router;
