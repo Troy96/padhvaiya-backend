@@ -19,7 +19,6 @@ class QuizController {
             if (!req.body.hasOwnProperty('startTime')) throw new Error('startTime not found');
             if (!req.body.hasOwnProperty('endTime')) throw new Error('endTime not found');
 
-            if (!req.body.hasOwnProperty('duration')) throw new Error('duration not found');
 
 
             await Quiz.create({
