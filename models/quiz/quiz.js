@@ -5,8 +5,8 @@ const QuizSchema = new mongoose.Schema({
     desc: { type: String, default: null },
     isLive: { type: Boolean, default: false },
     isOpenForRegistration: { type: Boolean, default: false },
-    timestamp: { type: Number, default: null },
-    duration: {type: Number, default: null},
+    startTime: { type: Number, default: null },
+    endTime: { type: Number, default: null },
     createdAt: { type: Date, default: Date.now() },
     updatedAt: { type: Date, default: Date.now() },
     totalQuestions: { type: Number, default: 0 }

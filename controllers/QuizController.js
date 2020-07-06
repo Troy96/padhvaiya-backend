@@ -16,7 +16,9 @@ class QuizController {
             if (!req.body.hasOwnProperty('name')) throw new Error('name not found');
             if (!req.body.hasOwnProperty('desc')) throw new Error('desc not found');
             if (!req.body.hasOwnProperty('isOpenForRegistration')) throw new Error('isOpenForRegistration not found');
-            if (!req.body.hasOwnProperty('timestamp')) throw new Error('timestamp not found');
+            if (!req.body.hasOwnProperty('startTime')) throw new Error('startTime not found');
+            if (!req.body.hasOwnProperty('endTime')) throw new Error('endTime not found');
+
             if (!req.body.hasOwnProperty('duration')) throw new Error('duration not found');
 
 
@@ -328,6 +330,11 @@ class QuizController {
             if (!quizObj.isLive) throw new Error('Answer cannot be submited now. Quiz is not live.');
 
             const participantId = req.params.participantId;
+            const participantObj = await QuizParticipant.findById({ _id: participantId });
+            if (!participantObj) throw new Error('Participant not found');
+
+            if(!participantObj.canAnswer) throw new Error('Participant can not answer');
+
             const questionId = req.params.questionId;
 
             if (!req.body.hasOwnProperty('answer')) throw new Error('answer not found');
@@ -348,8 +355,7 @@ class QuizController {
             if (!quizQuestion) throw new Error('Quiz question not found');
             answerGiven === quizQuestion.ans ? reqObj.isCorrect = true : reqObj.isCorrect = false;
 
-            const participantObj = await QuizParticipant.findById({ _id: participantId });
-            if (!participantObj) throw new Error('Participant not found');
+            
             participantObj['attemptedQuestions']++;
             await participantObj.save();
 
@@ -481,6 +487,34 @@ class QuizController {
             quizObj.isLive = false;
             await quizObj.save();
 
+            return res.status(httpCodes.OK).send({
+                status: true
+            })
+
+
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
+            })
+        }
+    }
+
+    async makeQuizOverForParticipant(){
+        try {
+
+            const quizId = req.params.quizId;
+            const quizObj = await Quiz.findById({ _id: quizId });
+            if (!quizObj) throw new Error('Quiz not found');
+
+            const participantId = req.params.participantId;
+            const participantObj = await QuizParticipant.findById({ _id: participantId });
+            if (!participantObj) throw new Error('Participant not found');
+
+            if(!participantObj.canAnswer) throw new Error('Quiz is already over for participant');
+
+            participantObj.canAnswer = false;
+            await participantObj.save();
+          
             return res.status(httpCodes.OK).send({
                 status: true
             })

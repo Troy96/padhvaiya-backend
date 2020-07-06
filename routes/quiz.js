@@ -20,6 +20,7 @@ router.get('/:quizId/leaderboard', quiz.createLeaderBoardForQuiz);
 router.get('/:quizId/open', quiz.makeQuizOpen);
 router.get('/:quizId/close', quiz.makeQuizOver);
 router.get('/:quizId/sendQuizLink', quiz.sendQuizLink);
+router.get('/:quizId/participants/:participantId/close', quiz.makeQuizOverForParticipant);
 
 
 module.exports = router;
