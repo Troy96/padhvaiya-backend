@@ -1,5 +1,6 @@
 require('dotenv').config();
 require('./db/conn');
+require('./crons/controller');
 
 const createError = require('http-errors');
 const express = require('express');
@@ -26,6 +27,7 @@ const chatRouter = require('./routes/chats');
 const contactUsRouter = require('./routes/contactus');
 const notifRouter = require('./routes/notification');
 const quizRouter = require('./routes/quiz');
+
 
 const app = express();
 

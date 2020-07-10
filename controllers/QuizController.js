@@ -18,6 +18,8 @@ class QuizController {
             if (!req.body.hasOwnProperty('isOpenForRegistration')) throw new Error('isOpenForRegistration not found');
             if (!req.body.hasOwnProperty('startTime')) throw new Error('startTime not found');
             if (!req.body.hasOwnProperty('endTime')) throw new Error('endTime not found');
+            if (!req.body.hasOwnProperty('startDate')) throw new Error('startDate not found');
+
 
 
 
