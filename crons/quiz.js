@@ -8,7 +8,7 @@ class QuizCron {
 
 
     async makeQuizLive() {
-        return Cron.scheduleJob('0 0 5 * * FRI', () => {
+        return Cron.scheduleJob('0 0 5 * * FRI', async () => {
 
             const currentDate = moment().format('L');
 
