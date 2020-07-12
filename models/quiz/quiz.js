@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const QuizSchema = new mongoose.Schema({
     name: { type: String, default: null },
     desc: { type: String, default: null },
-    isLive: { type: Boolean, default: false },
     isOpenForRegistration: { type: Boolean, default: false },
     startDate: { type: String, default: null},
     startTime: { type: Number, default: null },

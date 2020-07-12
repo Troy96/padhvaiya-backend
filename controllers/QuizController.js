@@ -325,7 +325,6 @@ class QuizController {
 
             const quizObj = await Quiz.findById({ _id: quizId });
             if (!quizObj) throw new Error('Quiz not found');
-            if (!quizObj.isLive) throw new Error('Answer cannot be submited now. Quiz is not live.');
 
             const participantId = req.params.participantId;
             const participantObj = await QuizParticipant.findById({ _id: participantId });
@@ -474,28 +473,29 @@ class QuizController {
         }
     }
 
-    async makeQuizOver(req, res) {
-        try {
+    
+    // async makeQuizOver(req, res) {
+    //     try {
 
-            const quizId = req.params.quizId;
-            const quizObj = await Quiz.findById({ _id: quizId });
-            if (!quizObj) throw new Error('Quiz not found');
+    //         const quizId = req.params.quizId;
+    //         const quizObj = await Quiz.findById({ _id: quizId });
+    //         if (!quizObj) throw new Error('Quiz not found');
 
-            if (!quizObj.isLive) throw new Error('Quiz is already over');
-            quizObj.isLive = false;
-            await quizObj.save();
+    //         if (!quizObj.isLive) throw new Error('Quiz is already over');
+    //         quizObj.isLive = false;
+    //         await quizObj.save();
 
-            return res.status(httpCodes.OK).send({
-                status: true
-            })
+    //         return res.status(httpCodes.OK).send({
+    //             status: true
+    //         })
 
 
-        } catch (err) {
-            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
-                error: err.message
-            })
-        }
-    }
+    //     } catch (err) {
+    //         return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+    //             error: err.message
+    //         })
+    //     }
+    // }
 
     async makeQuizOverForParticipant(){
         try {
@@ -525,25 +525,25 @@ class QuizController {
         }
     }
 
-    async makeQuizOpen(req, res) {
-        try {
-            const quizId = req.params.quizId;
-            const quizObj = await Quiz.findById({ _id: quizId });
-            if (!quizObj) throw new Error('Quiz not found');
+    // async makeQuizOpen(req, res) {
+    //     try {
+    //         const quizId = req.params.quizId;
+    //         const quizObj = await Quiz.findById({ _id: quizId });
+    //         if (!quizObj) throw new Error('Quiz not found');
 
-            if (quizObj.isLive) throw new Error('Quiz is already open');
-            quizObj.isLive = true;
-            await quizObj.save();
+    //         if (quizObj.isLive) throw new Error('Quiz is already open');
+    //         quizObj.isLive = true;
+    //         await quizObj.save();
 
-            return res.status(httpCodes.OK).send({
-                status: true
-            })
-        } catch (err) {
-            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
-                error: err.message
-            })
-        }
-    }
+    //         return res.status(httpCodes.OK).send({
+    //             status: true
+    //         })
+    //     } catch (err) {
+    //         return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+    //             error: err.message
+    //         })
+    //     }
+    // }
 
     async sendQuizLink() {
         try {
