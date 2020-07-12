@@ -295,6 +295,10 @@ class QuizController {
             if (!req.body.hasOwnProperty('phone')) throw new Error('phone not found');
 
 
+            const userWithThisEmail = await QuizParticipant.countDocuments({quizId: quizId, email: req.body.email});
+            if(userWithThisEmail > 0) throw new Error('Participant already registered');
+
+
 
             await QuizParticipant.create({
                 ...req.body,
