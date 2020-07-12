@@ -6,6 +6,8 @@ const { QuizQuestion } = require('../models/quiz/quiz-question');
 const { QuizRule } = require('../models/quiz/quiz-rule');
 const { QuizAnswer } = require('../models/quiz/quiz-answer');
 const quiz = require('../models/quiz/quiz');
+const { EmailController } = require('./EmailController');
+const email = new EmailController();
 
 
 class QuizController {
@@ -330,7 +332,7 @@ class QuizController {
             const participantObj = await QuizParticipant.findById({ _id: participantId });
             if (!participantObj) throw new Error('Participant not found');
 
-            if(!participantObj.canAnswer) throw new Error('Participant can not answer');
+            if (!participantObj.canAnswer) throw new Error('Participant can not answer');
 
             const questionId = req.params.questionId;
 
@@ -352,7 +354,7 @@ class QuizController {
             if (!quizQuestion) throw new Error('Quiz question not found');
             answerGiven === quizQuestion.ans ? reqObj.isCorrect = true : reqObj.isCorrect = false;
 
-            
+
             participantObj['attemptedQuestions']++;
             await participantObj.save();
 
@@ -473,7 +475,7 @@ class QuizController {
         }
     }
 
-    
+
     // async makeQuizOver(req, res) {
     //     try {
 
@@ -497,7 +499,7 @@ class QuizController {
     //     }
     // }
 
-    async makeQuizOverForParticipant(){
+    async makeQuizOverForParticipant() {
         try {
 
             const quizId = req.params.quizId;
@@ -508,11 +510,11 @@ class QuizController {
             const participantObj = await QuizParticipant.findById({ _id: participantId });
             if (!participantObj) throw new Error('Participant not found');
 
-            if(!participantObj.canAnswer) throw new Error('Quiz is already over for participant');
+            if (!participantObj.canAnswer) throw new Error('Quiz is already over for participant');
 
             participantObj.canAnswer = false;
             await participantObj.save();
-          
+
             return res.status(httpCodes.OK).send({
                 status: true
             })
@@ -545,13 +547,14 @@ class QuizController {
     //     }
     // }
 
-    async sendQuizLink() {
+    async sendQuizLink(req, res) {
         try {
             const quizId = req.params.quizId;
             const quizObj = await Quiz.findById({ _id: quizId });
             if (!quizObj) throw new Error('Quiz not found');
 
             const participants = await QuizParticipant.find({ quizId: quizId });
+
 
             (async function next(i) {
                 if (i == participants.length) {
@@ -570,7 +573,7 @@ class QuizController {
                      <p>Regards,</p>
                      The Padhvaiya Team`;
 
-                email.sendMail(participants[i].email, 'Weekend Quiz Link', msg)
+                await email.sendMail(participants[i].email, 'Weekend Quiz Link', msg);
 
                 return await next(++i);
             })(0);
