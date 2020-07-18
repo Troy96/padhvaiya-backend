@@ -6,6 +6,8 @@ const { QuizQuestion } = require('../models/quiz/quiz-question');
 const { QuizRule } = require('../models/quiz/quiz-rule');
 const { QuizAnswer } = require('../models/quiz/quiz-answer');
 const quiz = require('../models/quiz/quiz');
+const { EmailController } = require('./EmailController');
+const email = new EmailController();
 
 
 class QuizController {
@@ -19,9 +21,6 @@ class QuizController {
             if (!req.body.hasOwnProperty('startTime')) throw new Error('startTime not found');
             if (!req.body.hasOwnProperty('endTime')) throw new Error('endTime not found');
             if (!req.body.hasOwnProperty('startDate')) throw new Error('startDate not found');
-
-
-
 
             await Quiz.create({
                 ...req.body
@@ -296,6 +295,10 @@ class QuizController {
             if (!req.body.hasOwnProperty('phone')) throw new Error('phone not found');
 
 
+            const userWithThisEmail = await QuizParticipant.countDocuments({quizId: quizId, email: req.body.email});
+            if(userWithThisEmail > 0) throw new Error('Participant already registered');
+
+
 
             await QuizParticipant.create({
                 ...req.body,
@@ -328,13 +331,12 @@ class QuizController {
 
             const quizObj = await Quiz.findById({ _id: quizId });
             if (!quizObj) throw new Error('Quiz not found');
-            if (!quizObj.isLive) throw new Error('Answer cannot be submited now. Quiz is not live.');
 
             const participantId = req.params.participantId;
             const participantObj = await QuizParticipant.findById({ _id: participantId });
             if (!participantObj) throw new Error('Participant not found');
 
-            if(!participantObj.canAnswer) throw new Error('Participant can not answer');
+            if (!participantObj.canAnswer) throw new Error('Participant can not answer');
 
             const questionId = req.params.questionId;
 
@@ -356,7 +358,7 @@ class QuizController {
             if (!quizQuestion) throw new Error('Quiz question not found');
             answerGiven === quizQuestion.ans ? reqObj.isCorrect = true : reqObj.isCorrect = false;
 
-            
+
             participantObj['attemptedQuestions']++;
             await participantObj.save();
 
@@ -479,30 +481,31 @@ class QuizController {
         }
     }
 
-    async makeQuizOver(req, res) {
-        try {
 
-            const quizId = req.params.quizId;
-            const quizObj = await Quiz.findById({ _id: quizId });
-            if (!quizObj) throw new Error('Quiz not found');
+    // async makeQuizOver(req, res) {
+    //     try {
 
-            if (!quizObj.isLive) throw new Error('Quiz is already over');
-            quizObj.isLive = false;
-            await quizObj.save();
+    //         const quizId = req.params.quizId;
+    //         const quizObj = await Quiz.findById({ _id: quizId });
+    //         if (!quizObj) throw new Error('Quiz not found');
 
-            return res.status(httpCodes.OK).send({
-                status: true
-            })
+    //         if (!quizObj.isLive) throw new Error('Quiz is already over');
+    //         quizObj.isLive = false;
+    //         await quizObj.save();
+
+    //         return res.status(httpCodes.OK).send({
+    //             status: true
+    //         })
 
 
-        } catch (err) {
-            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
-                error: err.message
-            })
-        }
-    }
+    //     } catch (err) {
+    //         return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+    //             error: err.message
+    //         })
+    //     }
+    // }
 
-    async makeQuizOverForParticipant(){
+    async makeQuizOverForParticipant() {
         try {
 
             const quizId = req.params.quizId;
@@ -513,11 +516,11 @@ class QuizController {
             const participantObj = await QuizParticipant.findById({ _id: participantId });
             if (!participantObj) throw new Error('Participant not found');
 
-            if(!participantObj.canAnswer) throw new Error('Quiz is already over for participant');
+            if (!participantObj.canAnswer) throw new Error('Quiz is already over for participant');
 
             participantObj.canAnswer = false;
             await participantObj.save();
-          
+
             return res.status(httpCodes.OK).send({
                 status: true
             })
@@ -530,33 +533,34 @@ class QuizController {
         }
     }
 
-    async makeQuizOpen(req, res) {
-        try {
-            const quizId = req.params.quizId;
-            const quizObj = await Quiz.findById({ _id: quizId });
-            if (!quizObj) throw new Error('Quiz not found');
+    // async makeQuizOpen(req, res) {
+    //     try {
+    //         const quizId = req.params.quizId;
+    //         const quizObj = await Quiz.findById({ _id: quizId });
+    //         if (!quizObj) throw new Error('Quiz not found');
 
-            if (quizObj.isLive) throw new Error('Quiz is already open');
-            quizObj.isLive = true;
-            await quizObj.save();
+    //         if (quizObj.isLive) throw new Error('Quiz is already open');
+    //         quizObj.isLive = true;
+    //         await quizObj.save();
 
-            return res.status(httpCodes.OK).send({
-                status: true
-            })
-        } catch (err) {
-            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
-                error: err.message
-            })
-        }
-    }
+    //         return res.status(httpCodes.OK).send({
+    //             status: true
+    //         })
+    //     } catch (err) {
+    //         return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+    //             error: err.message
+    //         })
+    //     }
+    // }
 
-    async sendQuizLink() {
+    async sendQuizLink(req, res) {
         try {
             const quizId = req.params.quizId;
             const quizObj = await Quiz.findById({ _id: quizId });
             if (!quizObj) throw new Error('Quiz not found');
 
             const participants = await QuizParticipant.find({ quizId: quizId });
+
 
             (async function next(i) {
                 if (i == participants.length) {
@@ -575,7 +579,7 @@ class QuizController {
                      <p>Regards,</p>
                      The Padhvaiya Team`;
 
-                email.sendMail(participants[i].email, 'Weekend Quiz Link', msg)
+                await email.sendMail(participants[i].email, 'Weekend Quiz Link', msg);
 
                 return await next(++i);
             })(0);
