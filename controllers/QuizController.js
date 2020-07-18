@@ -295,8 +295,8 @@ class QuizController {
             if (!req.body.hasOwnProperty('phone')) throw new Error('phone not found');
 
 
-            const userWithThisEmail = await QuizParticipant.countDocuments({quizId: quizId, email: req.body.email});
-            if(userWithThisEmail > 0) throw new Error('Participant already registered');
+            const userWithThisEmail = await QuizParticipant.countDocuments({ quizId: quizId, email: req.body.email });
+            if (userWithThisEmail > 0) throw new Error('Participant already registered');
 
 
 
@@ -441,7 +441,7 @@ class QuizController {
             let rankedParticipantObjs = [];
 
             const quizParticipants = await QuizParticipant.find({ quizId: quizId });
-            const quizObj = await Quiz.findById({_id: quizId});
+            const quizObj = await Quiz.findById({ _id: quizId });
 
 
             (async function next(i) {
@@ -466,8 +466,11 @@ class QuizController {
                 quizAnswers.forEach(answer => {
                     if (answer.isCorrect) countOfCorrectAns++;
                 });
-                
-                if(countOfCorrectAns >= quizObj.passingCount) participantCorrectAnsMap[participantObj._id] = countOfCorrectAns;
+
+                if (countOfCorrectAns >= quizObj.passingCount) {
+                    participantCorrectAnsMap[participantObj._id] = countOfCorrectAns;
+                    participantObj['marks'] = countOfCorrectAns;
+                }
 
                 return await next(++i);
 
