@@ -439,6 +439,8 @@ class QuizController {
             let rankedParticipantObjs = [];
 
             const quizParticipants = await QuizParticipant.find({ quizId: quizId });
+            const quizObj = await Quiz.findById({_id: quizId});
+
 
             (async function next(i) {
                 if (i == quizParticipants.length) {
@@ -462,8 +464,8 @@ class QuizController {
                 quizAnswers.forEach(answer => {
                     if (answer.isCorrect) countOfCorrectAns++;
                 });
-
-                participantCorrectAnsMap[participantObj._id] = countOfCorrectAns;
+                
+                if(countOfCorrectAns >= quizObj.passingCount) participantCorrectAnsMap[participantObj._id] = countOfCorrectAns;
 
                 return await next(++i);
 
