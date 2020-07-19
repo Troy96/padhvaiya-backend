@@ -594,6 +594,30 @@ class QuizController {
         }
     }
 
+    async participantAttemptedQuestionCount(req, res) {
+        try {
+
+            const quizId = req.params.quizId;
+            const quizObj = await Quiz.findById({ _id: quizId });
+            if (!quizObj) throw new Error('Quiz not found');
+
+            const participantId = req.params.participantId;
+            const participantObj = await QuizParticipant.findById({ _id: participantId });
+            if (!participantObj) throw new Error('Participant not found');
+
+            return res.status(httpCodes.OK).send({
+                data: participantObj.attemptedQuestions,
+                status: true
+            })
+
+
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
+            })
+        }
+    }
+
 
 
 }
