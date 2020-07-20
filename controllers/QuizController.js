@@ -469,7 +469,7 @@ class QuizController {
 
                 if (countOfCorrectAns >= quizObj.passingCount) {
                     participantCorrectAnsMap[participantObj._id] = countOfCorrectAns;
-                    participantObj['marks'] = countOfCorrectAns;
+                    participantObj['correctAnswers'] = countOfCorrectAns;
                 }
 
                 return await next(++i);
@@ -573,10 +573,10 @@ class QuizController {
                 }
 
                 let msg = `
-                     <p>Hey ${participants[i].first_name}!,</p>
+                     <p>Hey ${participants[i].name}!,</p>
                      <br/>
                      <br/>
-                     <p><a href="http://padhvaiya.com/quiz/${quizId}/participants/${participants[i]._id}">here</a> to go to the weekend quiz page and start answering the questions.
+                     <p>Click <a href="http://padhvaiya.com/quiz/${quizId}/participants/${participants[i]._id}">here</a> to go to the weekend quiz page and start answering the questions.
                      <br/>
                      <br/>
                      <p>Regards,</p>

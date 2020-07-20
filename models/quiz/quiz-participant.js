@@ -11,7 +11,8 @@ const QuizParticipantSchema = new mongoose.Schema({
     attemptedQuestions: { type: Number, default: 0 },
     isRegistered: { type: Boolean, default: true },
     isQualified: { type: Boolean, default: true },
-    canAnswer: { type: Boolean, default: true }
+    canAnswer: { type: Boolean, default: true },
+    correctAnswers: { type: Number, default: 0 }
 });
 
 const QuizParticipant = mongoose.model('QuizParticipant', QuizParticipantSchema, 'QuizParticipant');
