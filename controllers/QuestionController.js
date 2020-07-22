@@ -30,11 +30,16 @@ class QuestionController {
             }
 
             if (req.body.type == 'choice') {
-                if(!req.body.hasOwnProperty('options')) throw new Error('Options not found');
+                if (!req.body.hasOwnProperty('options')) throw new Error('Options not found');
                 options = req.body.options;
                 dbObj['options'] = [...options];
             }
-            if (req.body.hasOwnProperty('userId')) dbObj['userId'] = req.body.userId;
+            if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
+            const userObj = await User.findById({ _id: req.body.userId });
+            if (!userObj) throw new Error('User not found');
+
+            dbObj['userId'] = req.body.userId;
+
 
             if (req.body.hasOwnProperty('desc')) dbObj['desc'] = req.body.desc;
 
