@@ -287,12 +287,20 @@ class QuizController {
             if (!quizObj['isOpenForRegistration']) throw new Error('Quiz is not open for registration');
 
             if (!req.body.hasOwnProperty('name')) throw new Error('name not found');
+            if (req.body.name === '') throw new Error('Name cannot be blank ');
+
+
             if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
             if (!req.body.userId) throw new Error('userid is null');
 
             if (!req.body.hasOwnProperty('email')) throw new Error('email not found');
+            if (req.body.email === '') throw new Error('Email cannot be blank ');
+
             if (!req.body.hasOwnProperty('age')) throw new Error('age not found');
+            if (!req.body.age) throw new Error('Age should be a number');
             if (!req.body.hasOwnProperty('phone')) throw new Error('phone not found');
+            if (!req.body.phone || (req.body.phone.length < 10)) throw new Error('Phone should be a proper 10 digit number');
+
 
 
             const userWithThisEmail = await QuizParticipant.countDocuments({ quizId: quizId, email: req.body.email });
