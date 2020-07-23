@@ -34,9 +34,11 @@ class QuestionController {
                 options = req.body.options;
                 dbObj['options'] = [...options];
             }
-            if (!req.body.hasOwnProperty('userId')) throw new Error('userId not found');
-            const userObj = await User.findById({ _id: req.body.userId });
+
+            if (!req.body.hasOwnProperty('userId')) throw new Error('User is not eligible');
+            userObj = await User.findById({ _id: req.body.userId });
             if (!userObj) throw new Error('User not found');
+            
 
             dbObj['userId'] = req.body.userId;
 
@@ -45,6 +47,8 @@ class QuestionController {
 
             const newQuestion = new Question(dbObj);
             const dbResp = await newQuestion.save();
+            userObj.questions.push(dbResp._id);
+            await userObj.save();
 
             questObj = await Question.findById({ _id: dbResp._id });
 
@@ -59,12 +63,7 @@ class QuestionController {
                 questObj['imgRef'] = dbStorageRef;
                 await questObj.save();
             }
-            if (req.body.hasOwnProperty('userId')) {
-                userObj = await User.findById({ _id: req.body.userId });
-                if (!userObj) throw new Error('User not found');
-                userObj.questions.push(dbResp._id);
-                await userObj.save();
-            }
+           
 
             await Notification.create({
                 actor: req.body.userId,
