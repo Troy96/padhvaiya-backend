@@ -330,7 +330,38 @@ class QuizController {
     }
 
     async getParticipants(req, res) {
+        try {
+            const quizId = req.params.quizId;
+            const participants = await QuizParticipant.find({ quizId: quizId });
 
+            return res.status(httpCodes.OK).send({
+                data: participants,
+                status: true
+            })
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message,
+                status: false
+            })
+        }
+    }
+
+    async getParticipantDetails(req, res) {
+        try {
+            const participantId = req.params.participantId;
+
+            const participantObj = await QuizParticipant.findById({ _id: participantId });
+
+            return res.status(httpCodes.OK).send({
+                data: participantObj,
+                status: true
+            })
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message,
+                status: false
+            })
+        }
     }
 
     async selectAnswer(req, res) {

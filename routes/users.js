@@ -10,5 +10,6 @@ router.delete('/:id', userController.deleteById);
 router.delete('/', userController.deleteAll);
 router.put('/:id', userController.updateById);
 router.get('/:id/:objectType/likestates', userController.getUserLikeStateByObjectType)
+router.get('/:startTime/:endTime/count', userController.getActiveUsersBetweenDate);
 
 module.exports = router;

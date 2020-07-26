@@ -5,6 +5,7 @@ const { UserLikeModel } = require('./../models/user-like');
 const { Group } = require('./../models/group');
 const { EmailController } = require('../controllers/EmailController');
 const httpCodes = require('http-status');
+const { ISO } = require('mongodb');
 
 
 class UserController {
@@ -77,8 +78,6 @@ class UserController {
                 .populate('answers')
                 .exec();
             if (!userObj) throw new Error('User not found!');
-
-            console.log(userObj)
 
             const creatorGroup = await Group.find({ admins: { $all: [userId] } });
             const membershipGroups = await Group.find({ members: { $all: [userId] } });
@@ -167,6 +166,32 @@ class UserController {
             return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
                 success: false,
                 error: e.message
+            })
+        }
+    }
+
+    async getActiveUsersBetweenDate(req, res) {
+        try {
+            const startTime = req.params.startTime;
+            const endTime = req.params.endTime;
+
+            const users = await User.find({
+                createdAt: {
+                    $gte: startTime,
+                    $lt: endTime
+                }
+            });
+
+            return res.status(httpCodes.OK).send({
+                success: true,
+                data: users
+            });
+
+
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                success: false,
+                error: err.message
             })
         }
     }

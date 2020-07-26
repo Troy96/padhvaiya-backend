@@ -22,6 +22,10 @@ router.get('/:quizId/leaderboard', quiz.createLeaderBoardForQuiz);
 router.get('/:quizId/sendQuizLink', quiz.sendQuizLink);
 router.get('/:quizId/participants/:participantId/close', quiz.makeQuizOverForParticipant);
 router.get('/:quizId/participants/:participantId/attemptedQuestions', quiz.participantAttemptedQuestionCount);
+router.get('/:quizId/participants', quiz.getParticipants);
+router.get('/:quizId/participants/:participantId', quiz.getParticipantDetails);
+
+
 
 
 
