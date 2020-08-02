@@ -6,7 +6,7 @@ const QuizParticipantSchema = new mongoose.Schema({
     userId: { type: mongoose.Types.ObjectId, ref: 'User' },
     name: { type: String, default: null },
     email: { type: String, default: null },
-    phone: { type: Number, default: null, unique: true },
+    phone: { type: Number, default: null },
     age: { type: Number, default: null },
     attemptedQuestions: { type: Number, default: 0 },
     isRegistered: { type: Boolean, default: true },
