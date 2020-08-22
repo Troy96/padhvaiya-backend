@@ -5,10 +5,14 @@ const quiz = new QuizController();
 
 router.post('/create', quiz.create)
 router.post('/:quizId/register', quiz.registerParticipant);
-router.get('/', quiz.getAll)
+router.get('/', quiz.getAll);
 router.get('/:quizId', quiz.getById);
 router.get('/:quizId/questions', quiz.getQuizQuestions);
 router.post('/:quizId/questions', quiz.createQuizQuestion);
+router.put('/:quizId/questions/:questionId', quiz.editQuizQuestion);
+router.get('/:quizId/questions/:questionId', quiz.getQuizQuestionById);
+
+
 router.post('/:quizId/rules', quiz.createQuizRules);
 router.get('/:quizId/rules', quiz.getQuizRules);
 router.get('/:quizId/openForRegistration', quiz.makeQuizOpenForRegistration);

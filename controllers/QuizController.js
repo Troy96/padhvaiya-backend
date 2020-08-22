@@ -100,7 +100,6 @@ class QuizController {
             if (!req.body.hasOwnProperty('ans')) throw new Error('ans not found');
 
             const reqObj = {
-                desc: req.body.desc,
                 options: req.body.options,
                 ans: req.body.ans,
                 engDesc: req.body.engDesc,
@@ -115,6 +114,35 @@ class QuizController {
             const quizObj = await Quiz.findById({ _id: quizId });
             quizObj.totalQuestions++;
             await quizObj.save();
+
+            return res.status(httpCodes.OK).send({
+                success: true
+            })
+
+        } catch (err) {
+            return res.status(httpCodes.INTERNAL_SERVER_ERROR).send({
+                error: err.message
+            })
+        }
+    }
+
+    async editQuizQuestion(req, res) {
+        try {
+            let updateObj = {};
+
+            const quizQuestion = req.params.questionId;
+            const quizQuestionObj = await QuizQuestion.findById({ _id: quizQuestion });
+            if (!quizQuestionObj) throw new Error('Question not found');
+
+            if (req.body.hasOwnProperty('engDesc')) updateObj['engDesc'] = req.body.engDesc;
+            if (req.body.hasOwnProperty('hindiDesc')) updateObj['hindiDesc'] = req.body.hindiDesc;
+
+            if (req.body.hasOwnProperty('engOptions')) updateObj['engOptions'] = req.body.engOptions;
+            if (req.body.hasOwnProperty('hindiOptions')) updateObj['hindiOptions'] = req.body.hindiOptions;
+
+            if (req.body.hasOwnProperty('ans')) updateObj['ans'] = req.body.ans;
+
+            await QuizQuestion.findByIdAndUpdate({ _id: quizQuestion }, updateObj);
 
             return res.status(httpCodes.OK).send({
                 success: true
