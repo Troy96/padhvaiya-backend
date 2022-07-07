@@ -23,7 +23,7 @@
     "http-status": "^1.4.0",
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.5.1",
-    "moment": "^2.27.0",
+    "moment": "^2.29.4",
     "mongodb": "^3.3.3",
     "mongoose": "^5.7.7",
     "morgan": "~1.9.1",
